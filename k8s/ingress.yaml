@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: fastapi-app
+  namespace: platform-demo
+  labels:
+    app.kubernetes.io/name: fastapi-app
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: fastapi-app.k8s.orb.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: fastapi-app
+                port:
+                  number: 80
