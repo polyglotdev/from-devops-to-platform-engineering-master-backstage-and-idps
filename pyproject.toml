@@ -1,0 +1,16 @@
+[project]
+name = "from-devops-to-platform-engineering-master-backstage-and-idps"
+version = "0.1.0"
+description = "devops learning project on backstage and idps"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi[standard]>=0.128.0",
+    "uvicorn>=0.40.0",
+]
+
+[tool.ruff]
+indent-width = 2
+
+[tool.ruff.format]
+quote-style = "single"
