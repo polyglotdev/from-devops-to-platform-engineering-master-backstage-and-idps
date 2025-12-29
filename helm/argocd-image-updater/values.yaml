@@ -1,0 +1,52 @@
+# ArgoCD Image Updater Helm Values
+# https://github.com/argoproj-labs/argocd-image-updater
+
+# Image updater configuration
+config:
+  # Registries configuration
+  registries:
+    - name: Docker Hub
+      api_url: https://registry-1.docker.io
+      prefix: docker.io
+      default: true
+      credentials: pullsecret:argocd/dockerhub-creds
+
+  # Log level (trace, debug, info, warn, error)
+  logLevel: info
+
+# ArgoCD server configuration
+argocd:
+  # Use gRPC to connect to ArgoCD
+  grpc:
+    plaintext: true
+  # ArgoCD server address
+  serverAddress: argocd-server.argocd.svc.cluster.local
+
+# Git write-back configuration
+# The Image Updater will update the git repository with new image tags
+authScripts:
+  enabled: true
+  scripts:
+    git-creds.sh: |
+      #!/bin/sh
+      echo "https://${GIT_USER}:${GIT_TOKEN}@github.com"
+
+# Service account configuration
+serviceAccount:
+  create: true
+  name: argocd-image-updater
+
+# Pod configuration
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 100m
+    memory: 128Mi
+
+# Metrics
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: false
