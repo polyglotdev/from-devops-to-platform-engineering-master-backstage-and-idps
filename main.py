@@ -52,7 +52,7 @@ REQUESTS_IN_PROGRESS = Gauge(
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(_app: FastAPI):
   logger.info('Application starting up')
   yield
   logger.info('Application shutting down')
