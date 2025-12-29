@@ -82,7 +82,11 @@ backstage:
         pullRequestBranchName: backstage-integration
       rules:
         - allow: [Component, System, API, Resource, Location, Template, Group, User]
-      locations: []
+      locations:
+        - type: file
+          target: ./examples/org.yaml
+          rules:
+            - allow: [User, Group]
 
   # Environment variables for database and auth
   extraEnvVars:
