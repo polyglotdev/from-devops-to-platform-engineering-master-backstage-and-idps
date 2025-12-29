@@ -1,0 +1,57 @@
+name: Backstage CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "backstage/**"
+  pull_request:
+    branches: [main]
+    paths:
+      - "backstage/**"
+
+jobs:
+  lint-typescript:
+    name: Lint TypeScript
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backstage
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "yarn"
+          cache-dependency-path: backstage/yarn.lock
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Run TypeScript check
+        run: yarn tsc
+
+      - name: Run ESLint
+        run: yarn lint:all
+
+      - name: Run Prettier check
+        run: yarn prettier:check
+
+  lint-dockerfile:
+    name: Lint Dockerfile
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run hadolint
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: backstage/packages/backend/Dockerfile
+          failure-threshold: warning
