@@ -6,7 +6,7 @@
 
 # Variables
 IMAGE_NAME := domniniquehallan/python-fastapi-app
-IMAGE_TAG := v2
+IMAGE_TAG := v3
 NAMESPACE := platform-demo
 ARGOCD_NAMESPACE := argocd
 APP_URL := https://fastapi-app.k8s.orb.local
@@ -50,14 +50,25 @@ docker-buildx-setup: ## Create and configure buildx builder for multi-arch build
 docker-buildx-list: ## List available buildx builders
 	docker buildx ls
 
-docker-build: docker-buildx-setup ## Build multi-arch Docker image
-	docker buildx build --platform linux/amd64,linux/arm64 -t $(IMAGE_NAME):$(IMAGE_TAG) --push .
+docker-build: docker-buildx-setup ## Build multi-arch Docker image with SBOM and provenance
+	docker buildx build --platform linux/amd64,linux/arm64 \
+		--sbom=true --provenance=true \
+		-t $(IMAGE_NAME):$(IMAGE_TAG) --push .
 
 docker-build-local: ## Build Docker image for local architecture only
 	docker build -t $(IMAGE_NAME):$(IMAGE_TAG) .
 
 docker-run: ## Run Docker container locally
 	docker run --rm -p 8000:8000 $(IMAGE_NAME):$(IMAGE_TAG)
+
+docker-scout: ## Run Docker Scout security analysis
+	docker scout quickview $(IMAGE_NAME):$(IMAGE_TAG)
+
+docker-scout-cves: ## Show CVEs in Docker image
+	docker scout cves $(IMAGE_NAME):$(IMAGE_TAG)
+
+docker-scout-recommendations: ## Show Docker Scout recommendations
+	docker scout recommendations $(IMAGE_NAME):$(IMAGE_TAG)
 
 ##@ Helm
 
