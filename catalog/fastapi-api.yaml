@@ -1,0 +1,370 @@
+---
+# FastAPI REST API Definition
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-api
+
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: fastapi-rest-api
+  title: FastAPI Platform Demo API
+  description: |
+    RESTful API for the Platform Demo FastAPI application. Provides
+    health monitoring, system diagnostics, observability endpoints,
+    and Prometheus metrics for Kubernetes deployments.
+  tags:
+    - rest
+    - openapi
+    - fastapi
+    - observability
+    - kubernetes
+  links:
+    - url: https://fastapi-app.k8s.orb.local/docs
+      title: Swagger UI
+      icon: docs
+    - url: https://fastapi-app.k8s.orb.local/redoc
+      title: ReDoc
+      icon: docs
+    - url: https://github.com/polyglotdev/from-devops-to-platform-engineering-master-backstage-and-idps/blob/main/main.py
+      title: API Source Code
+      icon: github
+  annotations:
+    github.com/project-slug: polyglotdev/from-devops-to-platform-engineering-master-backstage-and-idps
+spec:
+  type: openapi
+  lifecycle: production
+  owner: group:platform-team
+  system: platform-demo
+  definition: |
+    openapi: 3.0.0
+    info:
+      title: FastAPI Platform Demo API
+      version: 2.0.0
+      description: |
+        Production-ready FastAPI application with comprehensive observability
+        features for platform engineering demonstrations. Includes health probes,
+        system metrics, and Prometheus integration.
+      contact:
+        name: Platform Team
+        url: https://github.com/polyglotdev
+      license:
+        name: MIT
+        url: https://opensource.org/licenses/MIT
+    
+    servers:
+      - url: http://fastapi-app.k8s.orb.local
+        description: Local Kubernetes (OrbStack)
+      - url: http://localhost:8000
+        description: Local Development
+    
+    tags:
+      - name: greeting
+        description: Simple greeting endpoints
+      - name: health
+        description: Health and readiness probes for Kubernetes
+      - name: diagnostics
+        description: System diagnostics and statistics
+      - name: observability
+        description: Prometheus metrics and monitoring
+    
+    paths:
+      /api/v1/hello:
+        get:
+          summary: Hello World
+          description: Returns a simple greeting message
+          operationId: readRoot
+          tags:
+            - greeting
+          responses:
+            '200':
+              description: Successful response
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: "Hello, World!"
+    
+      /api/v1/healthz:
+        get:
+          summary: Liveness Probe
+          description: |
+            Kubernetes liveness probe endpoint. Returns OK if the process
+            is alive and responding. Used by kubelet to determine if the
+            container should be restarted.
+          operationId: healthz
+          tags:
+            - health
+          responses:
+            '200':
+              description: Application is alive
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        example: "ok"
+    
+      /api/v1/ready:
+        get:
+          summary: Readiness Probe
+          description: |
+            Kubernetes readiness probe endpoint. Returns ready status if
+            the application can receive traffic. Can be toggled via the
+            toggle endpoint for testing and demos.
+          operationId: readiness
+          tags:
+            - health
+          responses:
+            '200':
+              description: Application is ready to receive traffic
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        example: "ready"
+                      reason:
+                        type: string
+                        example: "ok"
+            '503':
+              description: Application is not ready
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        example: "not_ready"
+                      reason:
+                        type: string
+                        example: "maintenance mode"
+    
+      /api/v1/ready/toggle:
+        post:
+          summary: Toggle Readiness
+          description: |
+            Toggle the application readiness state. Useful for demonstrating
+            Kubernetes rolling updates and testing readiness probe behavior.
+          operationId: toggleReadiness
+          tags:
+            - health
+          parameters:
+            - name: ready
+              in: query
+              description: Set readiness state
+              schema:
+                type: boolean
+                default: true
+            - name: reason
+              in: query
+              description: Reason for state change
+              schema:
+                type: string
+                default: "toggled via API"
+          responses:
+            '200':
+              description: Readiness state updated
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      ready:
+                        type: boolean
+                      reason:
+                        type: string
+    
+      /api/v1/details:
+        get:
+          summary: System Details
+          description: |
+            Comprehensive system and request details including server info,
+            Kubernetes metadata (from downward API), resource usage, client
+            information parsed from User-Agent, and request metadata.
+          operationId: details
+          tags:
+            - diagnostics
+          responses:
+            '200':
+              description: Detailed system information
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      server:
+                        type: object
+                        properties:
+                          hostname:
+                            type: string
+                          ip:
+                            type: string
+                          platform:
+                            type: string
+                          python_version:
+                            type: string
+                          pid:
+                            type: integer
+                      kubernetes:
+                        type: object
+                        properties:
+                          pod_name:
+                            type: string
+                          pod_namespace:
+                            type: string
+                          pod_ip:
+                            type: string
+                          node_name:
+                            type: string
+                      resources:
+                        type: object
+                        properties:
+                          memory_rss_mb:
+                            type: number
+                          memory_percent:
+                            type: number
+                          cpu_percent:
+                            type: number
+                          threads:
+                            type: integer
+                      uptime:
+                        type: object
+                        properties:
+                          seconds:
+                            type: number
+                          formatted:
+                            type: string
+                          started_at:
+                            type: string
+                            format: date-time
+                      client:
+                        type: object
+                        properties:
+                          ip:
+                            type: string
+                          browser:
+                            type: object
+                          os:
+                            type: object
+                          device:
+                            type: object
+                      request:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          method:
+                            type: string
+                          url:
+                            type: string
+                      timestamp:
+                        type: string
+                        format: date-time
+    
+      /api/v1/stats:
+        get:
+          summary: System Statistics
+          description: |
+            Human-readable system statistics including uptime, memory usage,
+            CPU metrics, and process information. JSON alternative to the
+            /metrics endpoint.
+          operationId: stats
+          tags:
+            - diagnostics
+          responses:
+            '200':
+              description: System statistics
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      uptime:
+                        type: object
+                        properties:
+                          seconds:
+                            type: number
+                          formatted:
+                            type: string
+                      memory:
+                        type: object
+                        properties:
+                          rss_mb:
+                            type: number
+                          vms_mb:
+                            type: number
+                          percent:
+                            type: number
+                      cpu:
+                        type: object
+                        properties:
+                          percent:
+                            type: number
+                          threads:
+                            type: integer
+                      system:
+                        type: object
+                        properties:
+                          cpu_count:
+                            type: integer
+                          total_memory_gb:
+                            type: number
+                          disk_usage_percent:
+                            type: number
+                      process:
+                        type: object
+                        properties:
+                          pid:
+                            type: integer
+                          open_files:
+                            type: integer
+                          connections:
+                            type: integer
+    
+      /api/v1/getdate:
+        get:
+          summary: Current Date
+          description: Returns the current date in DD-MM-YYYY format
+          operationId: getdate
+          tags:
+            - greeting
+          responses:
+            '200':
+              description: Current date
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      date:
+                        type: string
+                        example: "29-12-2025"
+    
+      /metrics:
+        get:
+          summary: Prometheus Metrics
+          description: |
+            Prometheus metrics endpoint exposing application telemetry.
+            Includes HTTP request counts, latency histograms, and
+            in-progress request gauges.
+          operationId: metrics
+          tags:
+            - observability
+          responses:
+            '200':
+              description: Prometheus metrics in text format
+              content:
+                text/plain:
+                  schema:
+                    type: string
+                    example: |
+                      # HELP http_requests_total Total HTTP requests
+                      # TYPE http_requests_total counter
+                      http_requests_total{method="GET",endpoint="/api/v1/hello",status="200"} 42
