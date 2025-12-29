@@ -1,0 +1,76 @@
+---
+# FastAPI Service Component
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-component
+
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: fastapi-app
+  title: FastAPI Platform Demo
+  description: |
+    Production-ready FastAPI application demonstrating platform engineering
+    best practices. Features comprehensive observability with Prometheus metrics,
+    structured JSON logging, health probes for Kubernetes, and GitOps deployment
+    via ArgoCD. Built with Python 3.13 and deployed as a multi-architecture
+    Docker image.
+  tags:
+    - python
+    - fastapi
+    - kubernetes
+    - observability
+    - prometheus
+    - gitops
+    - production
+  annotations:
+    # TechDocs integration
+    backstage.io/techdocs-ref: dir:../docs/fastapi-app
+    
+    # GitHub integration
+    github.com/project-slug: polyglotdev/from-devops-to-platform-engineering-master-backstage-and-idps
+    
+    # Kubernetes integration
+    backstage.io/kubernetes-id: fastapi-app
+    backstage.io/kubernetes-namespace: platform-demo
+    backstage.io/kubernetes-label-selector: app.kubernetes.io/name=fastapi-app
+    
+    # Prometheus metrics
+    prometheus.io/scrape: "true"
+    prometheus.io/path: /metrics
+    prometheus.io/port: "8000"
+    
+    # ArgoCD integration
+    argocd/app-name: fastapi-app
+    
+    # Docker image
+    docker.io/repository: domniniquehallan/python-fastapi-app
+  links:
+    - url: https://github.com/polyglotdev/from-devops-to-platform-engineering-master-backstage-and-idps
+      title: GitHub Repository
+      icon: github
+    - url: https://hub.docker.com/r/domniniquehallan/python-fastapi-app
+      title: Docker Hub
+      icon: docker
+    - url: https://fastapi-app.k8s.orb.local
+      title: Application URL
+      icon: web
+    - url: https://fastapi-app.k8s.orb.local/docs
+      title: Swagger UI
+      icon: docs
+    - url: https://fastapi-app.k8s.orb.local/metrics
+      title: Prometheus Metrics
+      icon: dashboard
+spec:
+  type: service
+  lifecycle: production
+  owner: group:platform-team
+  system: platform-demo
+  
+  # API provided by this service
+  providesApis:
+    - fastapi-rest-api
+  
+  # Infrastructure dependencies
+  dependsOn:
+    - resource:kubernetes-cluster
+    - resource:fastapi-helm-chart
+    - resource:fastapi-docker-image
