@@ -1,0 +1,2325 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Helm Visualized</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/lucide-static@0.294.0/font/lucide.min.css"
+    />
+    <style>
+      :root {
+        --helm-blue: #0f1689;
+        --helm-light: #277a9f;
+        --blue-light: #e3f2fd;
+        --blue-mid: #90caf9;
+        --blue-dark: #1565c0;
+        --green-light: #e8f5e9;
+        --green-mid: #a5d6a7;
+        --green-dark: #2e7d32;
+        --orange-light: #fff3e0;
+        --orange-mid: #ffcc80;
+        --orange-dark: #e65100;
+        --purple-light: #f3e5f5;
+        --purple-mid: #ce93d8;
+        --purple-dark: #7b1fa2;
+        --teal-light: #e0f2f1;
+        --teal-mid: #80cbc4;
+        --teal-dark: #00695c;
+        --pink-light: #fce4ec;
+        --pink-mid: #f48fb1;
+        --pink-dark: #c2185b;
+        --yellow-light: #fffde7;
+        --yellow-mid: #fff59d;
+        --yellow-dark: #f9a825;
+        --red-light: #ffebee;
+        --red-mid: #ef9a9a;
+        --red-dark: #c62828;
+        --gray-light: #eceff1;
+        --gray-dark: #607d8b;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+          Oxygen, Ubuntu, sans-serif;
+        background: linear-gradient(135deg, #0f1689 0%, #277a9f 100%);
+        min-height: 100vh;
+        color: #fff;
+        overflow-x: hidden;
+      }
+
+      header {
+        text-align: center;
+        padding: 3rem 1rem;
+        background: linear-gradient(
+          135deg,
+          #0f1689 0%,
+          #1a237e 50%,
+          #277a9f 100%
+        );
+        position: relative;
+        overflow: hidden;
+      }
+
+      header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.1) 0%,
+          transparent 50%
+        );
+        animation: headerPulse 8s ease-in-out infinite;
+      }
+
+      @keyframes headerPulse {
+        0%,
+        100% {
+          transform: scale(1);
+          opacity: 0.5;
+        }
+        50% {
+          transform: scale(1.1);
+          opacity: 0.8;
+        }
+      }
+
+      header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        position: relative;
+        z-index: 1;
+      }
+
+      header p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        position: relative;
+        z-index: 1;
+      }
+
+      .helm-logo {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        animation: float 3s ease-in-out infinite;
+        position: relative;
+        z-index: 1;
+      }
+
+      .helm-logo i {
+        font-size: 4rem;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+
+      nav {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        padding: 1.5rem;
+        background: rgba(0, 0, 0, 0.4);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        backdrop-filter: blur(10px);
+      }
+
+      nav a {
+        color: #fff;
+        text-decoration: none;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+      }
+
+      nav a:hover {
+        background: rgba(255, 255, 255, 0.25);
+        transform: translateY(-2px);
+      }
+
+      nav a.basics {
+        border-left: 3px solid var(--green-mid);
+      }
+      nav a.intermediate {
+        border-left: 3px solid var(--orange-mid);
+      }
+      nav a.advanced {
+        border-left: 3px solid var(--purple-mid);
+      }
+      nav a.best-practices {
+        border-left: 3px solid var(--teal-mid);
+      }
+
+      section {
+        max-width: 1200px;
+        margin: 3rem auto;
+        padding: 2rem;
+      }
+
+      section h2 {
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .level-badge {
+        font-size: 0.8rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-weight: normal;
+      }
+
+      .level-basics {
+        background: var(--green-mid);
+        color: #000;
+      }
+      .level-intermediate {
+        background: var(--orange-mid);
+        color: #000;
+      }
+      .level-advanced {
+        background: var(--purple-mid);
+        color: #000;
+      }
+      .level-best-practices {
+        background: var(--teal-mid);
+        color: #000;
+      }
+
+      h2.basics {
+        color: var(--green-mid);
+        border-bottom: 2px solid var(--green-mid);
+      }
+      h2.intermediate {
+        color: var(--orange-mid);
+        border-bottom: 2px solid var(--orange-mid);
+      }
+      h2.advanced {
+        color: var(--purple-mid);
+        border-bottom: 2px solid var(--purple-mid);
+      }
+      h2.best-practices {
+        color: var(--teal-mid);
+        border-bottom: 2px solid var(--teal-mid);
+      }
+
+      .description {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        margin-bottom: 2rem;
+        color: rgba(255, 255, 255, 0.85);
+      }
+
+      /* Comparison Box */
+      .comparison-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      .comparison-box {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+        padding: 2rem;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .comparison-box h3 {
+        margin-bottom: 1rem;
+        font-size: 1.3rem;
+      }
+
+      .comparison-box.kubectl {
+        border: 2px solid var(--red-mid);
+      }
+
+      .comparison-box.kubectl h3 {
+        color: var(--red-mid);
+      }
+
+      .comparison-box.helm {
+        border: 2px solid var(--green-mid);
+      }
+
+      .comparison-box.helm h3 {
+        color: var(--green-mid);
+      }
+
+      .code-block {
+        background: rgba(0, 0, 0, 0.4);
+        border-radius: 8px;
+        padding: 1rem;
+        font-family: 'Monaco', 'Menlo', monospace;
+        font-size: 0.85rem;
+        overflow-x: auto;
+        margin: 1rem 0;
+      }
+
+      .code-block code {
+        color: var(--green-mid);
+      }
+
+      .code-block .comment {
+        color: #6a9955;
+      }
+
+      .code-block .keyword {
+        color: #569cd6;
+      }
+
+      .code-block .string {
+        color: #ce9178;
+      }
+
+      .code-block .variable {
+        color: #9cdcfe;
+      }
+
+      /* Package Manager Analogy */
+      .analogy-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin: 2rem 0;
+      }
+
+      .analogy-card {
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+      }
+
+      .analogy-card:hover {
+        transform: translateY(-5px);
+        background: rgba(255, 255, 255, 0.12);
+      }
+
+      .analogy-card .icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 60px;
+        height: 60px;
+        margin: 0 auto 1rem;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .analogy-card .icon i {
+        font-size: 1.8rem;
+      }
+
+      .analogy-card h4 {
+        color: var(--blue-mid);
+        margin-bottom: 0.5rem;
+      }
+
+      .analogy-card p {
+        font-size: 0.9rem;
+        opacity: 0.8;
+      }
+
+      /* Chart Structure Visualization */
+      .chart-structure {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        padding: 2rem;
+        position: relative;
+      }
+
+      .file-tree {
+        font-family: 'Monaco', 'Menlo', monospace;
+        font-size: 0.95rem;
+        line-height: 2;
+      }
+
+      .file-tree .folder {
+        color: var(--yellow-mid);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .file-tree .folder:hover {
+        color: var(--yellow-dark);
+      }
+
+      .file-tree .folder i {
+        font-size: 1.1rem;
+      }
+
+      .file-tree .file {
+        color: var(--blue-mid);
+        margin-left: 1.5rem;
+        position: relative;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .file-tree .file i {
+        font-size: 1rem;
+      }
+
+      .file-tree .file:hover {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+        padding: 0 0.5rem;
+        margin-left: 1rem;
+      }
+
+      .file-tree .file::before {
+        content: '';
+        position: absolute;
+        left: -1rem;
+        top: 50%;
+        width: 0.75rem;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.3);
+      }
+
+      .file-description {
+        display: none;
+        background: rgba(0, 0, 0, 0.6);
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 0.5rem 0 0.5rem 2rem;
+        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        font-size: 0.9rem;
+        border-left: 3px solid var(--green-mid);
+        animation: slideIn 0.3s ease;
+      }
+
+      .file-description.visible {
+        display: block;
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateX(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      /* Flow Animation */
+      .flow-demo {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        padding: 2rem;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .flow-steps {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+        position: relative;
+      }
+
+      .flow-step {
+        background: linear-gradient(
+          135deg,
+          var(--purple-light),
+          var(--purple-mid)
+        );
+        color: #000;
+        padding: 1.5rem;
+        border-radius: 12px;
+        text-align: center;
+        min-width: 140px;
+        position: relative;
+        z-index: 2;
+        transition: all 0.3s ease;
+      }
+
+      .flow-step:hover {
+        transform: scale(1.05);
+      }
+
+      .flow-step.values {
+        background: linear-gradient(
+          135deg,
+          var(--yellow-light),
+          var(--yellow-mid)
+        );
+      }
+
+      .flow-step.templates {
+        background: linear-gradient(135deg, var(--blue-light), var(--blue-mid));
+      }
+
+      .flow-step.manifests {
+        background: linear-gradient(
+          135deg,
+          var(--green-light),
+          var(--green-mid)
+        );
+      }
+
+      .flow-step.cluster {
+        background: linear-gradient(135deg, var(--teal-light), var(--teal-mid));
+      }
+
+      .flow-arrow {
+        font-size: 2rem;
+        color: var(--blue-mid);
+        animation: pulse-arrow 1.5s infinite;
+        z-index: 1;
+      }
+
+      @keyframes pulse-arrow {
+        0%,
+        100% {
+          opacity: 0.5;
+          transform: translateX(0);
+        }
+        50% {
+          opacity: 1;
+          transform: translateX(5px);
+        }
+      }
+
+      /* Value Injection Animation */
+      .injection-demo {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        padding: 2rem;
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: 1rem;
+        align-items: start;
+      }
+
+      @media (max-width: 900px) {
+        .injection-demo {
+          grid-template-columns: 1fr;
+        }
+        .injection-arrow {
+          transform: rotate(90deg);
+          justify-self: center;
+        }
+      }
+
+      .injection-box {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 12px;
+        padding: 1.5rem;
+        position: relative;
+      }
+
+      .injection-box h4 {
+        margin-bottom: 1rem;
+        color: var(--yellow-mid);
+      }
+
+      .injection-box.template h4 {
+        color: var(--blue-mid);
+      }
+
+      .injection-box.result h4 {
+        color: var(--green-mid);
+      }
+
+      .injection-arrow {
+        font-size: 2rem;
+        color: var(--purple-mid);
+        align-self: center;
+        animation: pulse-arrow 1.5s infinite;
+      }
+
+      .highlight-var {
+        background: rgba(156, 220, 254, 0.3);
+        padding: 0 4px;
+        border-radius: 3px;
+        animation: varPulse 2s infinite;
+      }
+
+      @keyframes varPulse {
+        0%,
+        100% {
+          background: rgba(156, 220, 254, 0.2);
+        }
+        50% {
+          background: rgba(156, 220, 254, 0.5);
+        }
+      }
+
+      .highlight-value {
+        background: rgba(78, 201, 176, 0.3);
+        padding: 0 4px;
+        border-radius: 3px;
+      }
+
+      /* Release Timeline */
+      .timeline {
+        position: relative;
+        padding: 2rem 0;
+      }
+
+      .timeline::before {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background: linear-gradient(
+          180deg,
+          var(--purple-mid),
+          var(--green-mid)
+        );
+        transform: translateX(-50%);
+      }
+
+      @media (max-width: 768px) {
+        .timeline::before {
+          left: 20px;
+        }
+      }
+
+      .timeline-item {
+        display: flex;
+        align-items: center;
+        margin: 2rem 0;
+        position: relative;
+      }
+
+      .timeline-item:nth-child(odd) {
+        flex-direction: row-reverse;
+      }
+
+      @media (max-width: 768px) {
+        .timeline-item,
+        .timeline-item:nth-child(odd) {
+          flex-direction: row;
+          padding-left: 50px;
+        }
+      }
+
+      .timeline-content {
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        padding: 1.5rem;
+        width: 45%;
+        position: relative;
+        transition: all 0.3s ease;
+      }
+
+      .timeline-content:hover {
+        background: rgba(255, 255, 255, 0.12);
+        transform: scale(1.02);
+      }
+
+      @media (max-width: 768px) {
+        .timeline-content {
+          width: calc(100% - 50px);
+        }
+      }
+
+      .timeline-dot {
+        width: 20px;
+        height: 20px;
+        background: var(--green-mid);
+        border-radius: 50%;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 2;
+        box-shadow: 0 0 20px var(--green-mid);
+      }
+
+      @media (max-width: 768px) {
+        .timeline-dot {
+          left: 20px;
+        }
+      }
+
+      .timeline-content h4 {
+        color: var(--orange-mid);
+        margin-bottom: 0.5rem;
+      }
+
+      .timeline-content .revision {
+        font-size: 0.8rem;
+        color: var(--gray-light);
+        margin-bottom: 0.5rem;
+      }
+
+      /* Commands Grid */
+      .commands-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .command-card {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 1.5rem;
+        border-left: 4px solid var(--purple-mid);
+        transition: all 0.3s ease;
+      }
+
+      .command-card:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateX(5px);
+      }
+
+      .command-card h4 {
+        color: var(--purple-mid);
+        margin-bottom: 0.5rem;
+        font-family: 'Monaco', 'Menlo', monospace;
+      }
+
+      .command-card p {
+        font-size: 0.9rem;
+        opacity: 0.8;
+        margin-bottom: 1rem;
+      }
+
+      .command-card code {
+        display: block;
+        background: rgba(0, 0, 0, 0.4);
+        padding: 0.75rem;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        color: var(--green-mid);
+      }
+
+      /* Helper Functions Visualization */
+      .helpers-demo {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        padding: 2rem;
+      }
+
+      .helper-example {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin: 1.5rem 0;
+        padding: 1.5rem;
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 12px;
+      }
+
+      @media (max-width: 768px) {
+        .helper-example {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .helper-example h5 {
+        color: var(--teal-mid);
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+      }
+
+      /* Conditionals Animation */
+      .conditional-demo {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        padding: 2rem;
+      }
+
+      .toggle-container {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .toggle-switch {
+        position: relative;
+        width: 60px;
+        height: 30px;
+        background: var(--red-mid);
+        border-radius: 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .toggle-switch.active {
+        background: var(--green-mid);
+      }
+
+      .toggle-switch::after {
+        content: '';
+        position: absolute;
+        width: 26px;
+        height: 26px;
+        background: #fff;
+        border-radius: 50%;
+        top: 2px;
+        left: 2px;
+        transition: all 0.3s ease;
+      }
+
+      .toggle-switch.active::after {
+        left: 32px;
+      }
+
+      .conditional-output {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 12px;
+        padding: 1.5rem;
+        min-height: 150px;
+        transition: all 0.5s ease;
+      }
+
+      .conditional-output.disabled {
+        opacity: 0.5;
+      }
+
+      .conditional-output .generated {
+        color: var(--green-mid);
+        animation: fadeIn 0.5s ease;
+      }
+
+      .conditional-output .not-generated {
+        color: var(--red-mid);
+        font-style: italic;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Loop Visualization */
+      .loop-demo {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        padding: 2rem;
+      }
+
+      .loop-items {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin: 1.5rem 0;
+      }
+
+      .loop-item {
+        background: linear-gradient(
+          135deg,
+          var(--orange-light),
+          var(--orange-mid)
+        );
+        color: #000;
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        animation: loopPulse 2s infinite;
+        font-weight: bold;
+      }
+
+      .loop-item:nth-child(1) {
+        animation-delay: 0s;
+      }
+      .loop-item:nth-child(2) {
+        animation-delay: 0.3s;
+      }
+      .loop-item:nth-child(3) {
+        animation-delay: 0.6s;
+      }
+
+      @keyframes loopPulse {
+        0%,
+        100% {
+          transform: scale(1);
+          box-shadow: 0 0 0 0 rgba(255, 204, 128, 0.4);
+        }
+        50% {
+          transform: scale(1.05);
+          box-shadow: 0 0 20px 5px rgba(255, 204, 128, 0.2);
+        }
+      }
+
+      /* Dependencies Visualization */
+      .deps-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2rem;
+        padding: 2rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+      }
+
+      .parent-chart {
+        background: linear-gradient(
+          135deg,
+          var(--purple-light),
+          var(--purple-mid)
+        );
+        color: #000;
+        padding: 2rem 3rem;
+        border-radius: 16px;
+        text-align: center;
+        position: relative;
+        z-index: 2;
+      }
+
+      .dep-arrow {
+        font-size: 2rem;
+        color: var(--purple-mid);
+      }
+
+      .child-charts {
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .child-chart {
+        background: linear-gradient(135deg, var(--teal-light), var(--teal-mid));
+        color: #000;
+        padding: 1.5rem 2rem;
+        border-radius: 12px;
+        text-align: center;
+        animation: childFloat 3s ease-in-out infinite;
+      }
+
+      .child-chart:nth-child(2) {
+        animation-delay: 0.5s;
+      }
+
+      .child-chart:nth-child(3) {
+        animation-delay: 1s;
+      }
+
+      @keyframes childFloat {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-5px);
+        }
+      }
+
+      /* Hooks Timeline */
+      .hooks-timeline {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 2rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        position: relative;
+        overflow: hidden;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      .hooks-timeline::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 5%;
+        right: 5%;
+        height: 4px;
+        background: linear-gradient(
+          90deg,
+          var(--yellow-mid),
+          var(--green-mid),
+          var(--purple-mid)
+        );
+        z-index: 0;
+      }
+
+      .hook-stage {
+        background: rgba(0, 0, 0, 0.6);
+        padding: 1rem 1.5rem;
+        border-radius: 12px;
+        text-align: center;
+        position: relative;
+        z-index: 1;
+        min-width: 120px;
+      }
+
+      .hook-stage h5 {
+        font-size: 0.8rem;
+        margin-bottom: 0.5rem;
+        opacity: 0.7;
+      }
+
+      .hook-stage.pre-install {
+        border: 2px solid var(--yellow-mid);
+      }
+      .hook-stage.install {
+        border: 2px solid var(--green-mid);
+      }
+      .hook-stage.post-install {
+        border: 2px solid var(--purple-mid);
+      }
+
+      .hook-stage .hook-name {
+        color: var(--green-mid);
+        font-size: 0.9rem;
+      }
+
+      /* Best Practices Cards */
+      .practices-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .practice-card {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+        padding: 2rem;
+        border-top: 4px solid var(--teal-mid);
+        transition: all 0.3s ease;
+      }
+
+      .practice-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      }
+
+      .practice-card h4 {
+        color: var(--teal-mid);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .practice-card h4 i {
+        font-size: 1.2rem;
+      }
+
+      .practice-card ul {
+        list-style: none;
+      }
+
+      .practice-card li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        font-size: 0.95rem;
+      }
+
+      .practice-card li::before {
+        content: '>';
+        color: var(--teal-mid);
+        margin-right: 0.5rem;
+      }
+
+      /* Interactive Controls */
+      .controls {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+      }
+
+      button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: #fff;
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+      }
+
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+      }
+
+      button:active {
+        transform: translateY(0);
+      }
+
+      /* Legend */
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .legend-color {
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+      }
+
+      /* Kubectl vs Helm Animation */
+      .vs-animation {
+        position: relative;
+        padding: 2rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        overflow: hidden;
+      }
+
+      .yaml-stack {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin: 1rem 0;
+      }
+
+      .yaml-file {
+        background: rgba(0, 0, 0, 0.3);
+        padding: 0.75rem 1rem;
+        border-radius: 6px;
+        font-family: 'Monaco', 'Menlo', monospace;
+        font-size: 0.85rem;
+        border-left: 3px solid var(--blue-mid);
+        transition: all 0.3s ease;
+      }
+
+      .yaml-file:hover {
+        transform: translateX(10px);
+        background: rgba(0, 0, 0, 0.5);
+      }
+
+      /* Footer */
+      footer {
+        text-align: center;
+        padding: 2rem;
+        background: rgba(0, 0, 0, 0.4);
+        margin-top: 3rem;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        header h1 {
+          font-size: 1.8rem;
+        }
+        section {
+          padding: 1rem;
+        }
+        .flow-steps {
+          flex-direction: column;
+        }
+        .flow-arrow {
+          transform: rotate(90deg);
+        }
+      }
+
+      /* Section divider */
+      .section-divider {
+        text-align: center;
+        padding: 2rem;
+        font-size: 1.2rem;
+        color: rgba(255, 255, 255, 0.5);
+        position: relative;
+      }
+
+      .section-divider::before,
+      .section-divider::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        width: 30%;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.3),
+          transparent
+        );
+      }
+
+      .section-divider::before {
+        left: 5%;
+      }
+      .section-divider::after {
+        right: 5%;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="helm-logo"><i class="icon-ship-wheel"></i></div>
+      <h1>Helm Visualized</h1>
+      <p>The Package Manager for Kubernetes - From Zero to Hero</p>
+    </header>
+
+    <nav>
+      <a href="#what-is-helm" class="basics">What is Helm?</a>
+      <a href="#kubectl-vs-helm" class="basics">kubectl vs Helm</a>
+      <a href="#chart-structure" class="basics">Chart Structure</a>
+      <a href="#templating" class="intermediate">Templating</a>
+      <a href="#commands" class="intermediate">Commands</a>
+      <a href="#releases" class="intermediate">Releases</a>
+      <a href="#helpers" class="advanced">Helpers</a>
+      <a href="#conditionals" class="advanced">Conditionals</a>
+      <a href="#loops" class="advanced">Loops</a>
+      <a href="#dependencies" class="advanced">Dependencies</a>
+      <a href="#hooks" class="advanced">Hooks</a>
+      <a href="#best-practices" class="best-practices">Best Practices</a>
+    </nav>
+
+    <!-- BASICS SECTION -->
+    <section id="what-is-helm">
+      <h2 class="basics">
+        What is Helm?
+        <span class="level-badge level-basics">Basics</span>
+      </h2>
+      <p class="description">
+        Helm is a <strong>package manager for Kubernetes</strong> - just like
+        apt for Ubuntu, brew for macOS, or npm for Node.js. It bundles all the
+        Kubernetes resources needed to run an application into a single
+        deployable unit called a <strong>Chart</strong>.
+      </p>
+
+      <div class="analogy-grid">
+        <div class="analogy-card">
+          <div class="icon"><i class="icon-package"></i></div>
+          <h4>apt / brew / npm</h4>
+          <p>
+            Install software packages with dependencies handled automatically
+          </p>
+        </div>
+        <div class="analogy-card">
+          <div class="icon"><i class="icon-ship-wheel"></i></div>
+          <h4>Helm</h4>
+          <p>
+            Install Kubernetes applications with all resources bundled together
+          </p>
+        </div>
+        <div class="analogy-card">
+          <div class="icon"><i class="icon-file-archive"></i></div>
+          <h4>Package / Chart</h4>
+          <p>A bundle containing everything needed to run the software</p>
+        </div>
+        <div class="analogy-card">
+          <div class="icon"><i class="icon-rocket"></i></div>
+          <h4>Installation / Release</h4>
+          <p>A running instance of that package in your environment</p>
+        </div>
+      </div>
+
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-color" style="background: var(--green-mid)"></div>
+          <span
+            ><strong>Chart</strong> - The package (templates + defaults)</span
+          >
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background: var(--orange-mid)"></div>
+          <span><strong>Release</strong> - A deployed instance of a chart</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background: var(--purple-mid)"></div>
+          <span><strong>Repository</strong> - Where charts are stored</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="kubectl-vs-helm">
+      <h2 class="basics">
+        kubectl apply vs Helm
+        <span class="level-badge level-basics">Basics</span>
+      </h2>
+      <p class="description">
+        Why not just use <code>kubectl apply</code>? As your application grows,
+        managing raw YAML becomes painful. Helm solves real problems.
+      </p>
+
+      <div class="comparison-container">
+        <div class="comparison-box kubectl">
+          <h3>kubectl apply (The Hard Way)</h3>
+          <div class="yaml-stack">
+            <div class="yaml-file">kubectl apply -f namespace.yaml</div>
+            <div class="yaml-file">kubectl apply -f configmap.yaml</div>
+            <div class="yaml-file">kubectl apply -f secret.yaml</div>
+            <div class="yaml-file">kubectl apply -f deployment.yaml</div>
+            <div class="yaml-file">kubectl apply -f service.yaml</div>
+            <div class="yaml-file">kubectl apply -f ingress.yaml</div>
+          </div>
+          <ul
+            style="
+              margin-top: 1rem;
+              margin-left: 1.5rem;
+              line-height: 1.8;
+              opacity: 0.9;
+            "
+          >
+            <li>Different values per environment? Copy all files</li>
+            <li>No version tracking or rollback</li>
+            <li>Manual ordering of resources</li>
+            <li>Repetitive boilerplate</li>
+          </ul>
+        </div>
+
+        <div class="comparison-box helm">
+          <h3>Helm (The Smart Way)</h3>
+          <div class="code-block">
+            <code
+              >helm install my-app ./chart \ --set replicas=3 \ --set
+              image.tag=v2.0.0</code
+            >
+          </div>
+          <ul
+            style="
+              margin-top: 1rem;
+              margin-left: 1.5rem;
+              line-height: 1.8;
+              opacity: 0.9;
+            "
+          >
+            <li>One command deploys everything</li>
+            <li>Override values per environment</li>
+            <li>Built-in release history and rollback</li>
+            <li>Templates reduce boilerplate</li>
+            <li>Dependency management</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="chart-structure">
+      <h2 class="basics">
+        Chart Structure
+        <span class="level-badge level-basics">Basics</span>
+      </h2>
+      <p class="description">
+        A Helm chart is just a directory with a specific structure. Click on any
+        file to learn what it does.
+      </p>
+
+      <div class="chart-structure">
+        <div class="file-tree">
+          <div class="folder" onclick="toggleFolder(this)">
+            <i class="icon-folder"></i> my-chart/
+          </div>
+          <div class="file" onclick="toggleDescription('chart-yaml')">
+            <i class="icon-file-code"></i> Chart.yaml
+          </div>
+          <div id="chart-yaml" class="file-description">
+            <strong>The chart's metadata.</strong> Contains name, version,
+            description, and dependencies. Think of it as package.json for your
+            chart.
+            <div class="code-block" style="margin-top: 0.5rem">
+              <code
+                >apiVersion: v2 name: fastapi-app version: 1.0.0 description: A
+                FastAPI application appVersion: "1.0.0"</code
+              >
+            </div>
+          </div>
+
+          <div class="file" onclick="toggleDescription('values-yaml')">
+            <i class="icon-file-code"></i> values.yaml
+          </div>
+          <div id="values-yaml" class="file-description">
+            <strong>Default configuration values.</strong> These get injected
+            into templates. Users can override these at install time.
+            <div class="code-block" style="margin-top: 0.5rem">
+              <code
+                >replicaCount: 2 image: repository: my-registry/fastapi-app tag:
+                latest service: port: 80</code
+              >
+            </div>
+          </div>
+
+          <div class="folder" onclick="toggleFolder(this)">
+            <i class="icon-folder"></i> templates/
+          </div>
+          <div
+            class="file"
+            style="margin-left: 3rem"
+            onclick="toggleDescription('deployment-tpl')"
+          >
+            <i class="icon-file-code"></i> deployment.yaml
+          </div>
+          <div id="deployment-tpl" class="file-description">
+            <strong>Kubernetes Deployment template.</strong> Uses Go templating
+            to inject values.
+            <div class="code-block" style="margin-top: 0.5rem">
+              <code
+                >replicas:
+                <span class="highlight-var">{{ .Values.replicaCount }}</span>
+                image:
+                <span class="highlight-var"
+                  >{{ .Values.image.repository }}:{{ .Values.image.tag }}</span
+                ></code
+              >
+            </div>
+          </div>
+
+          <div
+            class="file"
+            style="margin-left: 3rem"
+            onclick="toggleDescription('service-tpl')"
+          >
+            <i class="icon-file-code"></i> service.yaml
+          </div>
+          <div id="service-tpl" class="file-description">
+            <strong>Kubernetes Service template.</strong> Exposes your pods.
+          </div>
+
+          <div
+            class="file"
+            style="margin-left: 3rem"
+            onclick="toggleDescription('ingress-tpl')"
+          >
+            <i class="icon-file-code"></i> ingress.yaml
+          </div>
+          <div id="ingress-tpl" class="file-description">
+            <strong>Kubernetes Ingress template.</strong> External access
+            routing rules.
+          </div>
+
+          <div
+            class="file"
+            style="margin-left: 3rem"
+            onclick="toggleDescription('helpers-tpl')"
+          >
+            <i class="icon-file-code"></i> _helpers.tpl
+          </div>
+          <div id="helpers-tpl" class="file-description">
+            <strong>Reusable template snippets.</strong> Define once, use
+            everywhere. The underscore prefix means this file won't generate a
+            manifest.
+            <div class="code-block" style="margin-top: 0.5rem">
+              <code
+                >{{- define "myapp.fullname" -}} {{ .Release.Name }}-{{
+                .Chart.Name }} {{- end -}}</code
+              >
+            </div>
+          </div>
+
+          <div
+            class="file"
+            style="margin-left: 3rem"
+            onclick="toggleDescription('notes-tpl')"
+          >
+            <i class="icon-file-text"></i> NOTES.txt
+          </div>
+          <div id="notes-tpl" class="file-description">
+            <strong>Post-installation notes.</strong> Shown to users after helm
+            install. Great for providing access instructions.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider">Intermediate Concepts</div>
+
+    <!-- INTERMEDIATE SECTION -->
+    <section id="templating">
+      <h2 class="intermediate">
+        Templating and Value Injection
+        <span class="level-badge level-intermediate">Intermediate</span>
+      </h2>
+      <p class="description">
+        Helm uses Go templating to inject values into your Kubernetes manifests.
+        Values flow from values.yaml (or command-line overrides) into templates.
+      </p>
+
+      <div class="flow-demo">
+        <div class="flow-steps">
+          <div class="flow-step values">
+            <h4>values.yaml</h4>
+            <p>Your config</p>
+          </div>
+          <span class="flow-arrow"><i class="icon-plus"></i></span>
+          <div class="flow-step templates">
+            <h4>Templates</h4>
+            <p>{{ .Values.* }}</p>
+          </div>
+          <span class="flow-arrow"><i class="icon-arrow-right"></i></span>
+          <div class="flow-step manifests">
+            <h4>Manifests</h4>
+            <p>Pure YAML</p>
+          </div>
+          <span class="flow-arrow"><i class="icon-arrow-right"></i></span>
+          <div class="flow-step cluster">
+            <h4>Cluster</h4>
+            <p>Running pods</p>
+          </div>
+        </div>
+      </div>
+
+      <h3 style="margin: 2rem 0 1rem; color: var(--blue-mid)">
+        Watch Values Get Injected
+      </h3>
+
+      <div class="injection-demo">
+        <div class="injection-box">
+          <h4>values.yaml</h4>
+          <div class="code-block">
+            <code
+              ><span class="keyword">replicaCount:</span>
+              <span class="highlight-value">3</span>
+              <span class="keyword">image:</span>
+              <span class="keyword">repository:</span>
+              <span class="highlight-value">nginx</span>
+              <span class="keyword">tag:</span>
+              <span class="highlight-value">1.21</span>
+              <span class="keyword">service:</span>
+              <span class="keyword">port:</span>
+              <span class="highlight-value">80</span></code
+            >
+          </div>
+        </div>
+
+        <span class="injection-arrow"><i class="icon-arrow-right"></i></span>
+
+        <div class="injection-box template">
+          <h4>deployment.yaml (template)</h4>
+          <div class="code-block">
+            <code
+              ><span class="keyword">spec:</span>
+              <span class="keyword">replicas:</span>
+              <span class="highlight-var">{{ .Values.replicaCount }}</span>
+              <span class="keyword">template:</span>
+              <span class="keyword">spec:</span>
+              <span class="keyword">containers:</span>
+              - <span class="keyword">image:</span>
+              <span class="highlight-var"
+                >{{ .Values.image.repository }}:{{ .Values.image.tag }}</span
+              ></code
+            >
+          </div>
+        </div>
+
+        <span class="injection-arrow"><i class="icon-arrow-right"></i></span>
+
+        <div class="injection-box result">
+          <h4>Generated Manifest</h4>
+          <div class="code-block">
+            <code
+              ><span class="keyword">spec:</span>
+              <span class="keyword">replicas:</span>
+              <span class="highlight-value">3</span>
+              <span class="keyword">template:</span>
+              <span class="keyword">spec:</span>
+              <span class="keyword">containers:</span>
+              - <span class="keyword">image:</span>
+              <span class="highlight-value">nginx:1.21</span></code
+            >
+          </div>
+        </div>
+      </div>
+
+      <div
+        style="
+          margin-top: 2rem;
+          padding: 1rem;
+          background: rgba(0, 0, 0, 0.2);
+          border-radius: 8px;
+        "
+      >
+        <p><strong>Built-in Objects Available in Templates:</strong></p>
+        <div
+          style="
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+          "
+        >
+          <div><code>.Values</code> - values.yaml + overrides</div>
+          <div><code>.Release.Name</code> - release name</div>
+          <div><code>.Chart.Name</code> - chart name</div>
+          <div><code>.Release.Namespace</code> - target namespace</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="commands">
+      <h2 class="intermediate">
+        Essential Helm Commands
+        <span class="level-badge level-intermediate">Intermediate</span>
+      </h2>
+      <p class="description">
+        These are the commands you'll use daily when working with Helm.
+      </p>
+
+      <div class="commands-grid">
+        <div class="command-card">
+          <h4>helm install</h4>
+          <p>Deploy a chart as a new release</p>
+          <code>helm install my-app ./chart -n prod</code>
+        </div>
+
+        <div class="command-card">
+          <h4>helm upgrade</h4>
+          <p>Update an existing release</p>
+          <code>helm upgrade my-app ./chart --set replicas=5</code>
+        </div>
+
+        <div class="command-card">
+          <h4>helm rollback</h4>
+          <p>Revert to a previous revision</p>
+          <code>helm rollback my-app 2</code>
+        </div>
+
+        <div class="command-card">
+          <h4>helm uninstall</h4>
+          <p>Remove a release completely</p>
+          <code>helm uninstall my-app -n prod</code>
+        </div>
+
+        <div class="command-card">
+          <h4>helm list</h4>
+          <p>Show all releases</p>
+          <code>helm list --all-namespaces</code>
+        </div>
+
+        <div class="command-card">
+          <h4>helm history</h4>
+          <p>View release revision history</p>
+          <code>helm history my-app</code>
+        </div>
+
+        <div class="command-card">
+          <h4>helm template</h4>
+          <p>Render templates locally (dry run)</p>
+          <code>helm template my-app ./chart</code>
+        </div>
+
+        <div class="command-card">
+          <h4>helm lint</h4>
+          <p>Check chart for issues</p>
+          <code>helm lint ./chart</code>
+        </div>
+      </div>
+    </section>
+
+    <section id="releases">
+      <h2 class="intermediate">
+        Release Management and History
+        <span class="level-badge level-intermediate">Intermediate</span>
+      </h2>
+      <p class="description">
+        Every <code>helm install</code> or <code>helm upgrade</code> creates a
+        new revision. Helm tracks the complete history, enabling easy rollbacks.
+      </p>
+
+      <div class="controls">
+        <button onclick="simulateUpgrade()">Simulate Upgrade</button>
+        <button onclick="simulateRollback()">Rollback to Rev 1</button>
+        <button onclick="resetTimeline()">Reset</button>
+      </div>
+
+      <div class="timeline" id="release-timeline">
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-content">
+            <div class="revision">Revision 1</div>
+            <h4>helm install my-app ./chart</h4>
+            <p>Initial deployment with image:v1.0.0</p>
+            <div class="code-block" style="font-size: 0.8rem">
+              <code>STATUS: deployed</code>
+            </div>
+          </div>
+        </div>
+
+        <div class="timeline-item" id="rev2" style="display: none">
+          <div
+            class="timeline-dot"
+            style="
+              background: var(--orange-mid);
+              box-shadow: 0 0 20px var(--orange-mid);
+            "
+          ></div>
+          <div class="timeline-content">
+            <div class="revision">Revision 2</div>
+            <h4>helm upgrade my-app ./chart --set image.tag=v2.0.0</h4>
+            <p>Updated to new image version</p>
+            <div class="code-block" style="font-size: 0.8rem">
+              <code>STATUS: deployed</code>
+            </div>
+          </div>
+        </div>
+
+        <div class="timeline-item" id="rev3" style="display: none">
+          <div
+            class="timeline-dot"
+            style="
+              background: var(--purple-mid);
+              box-shadow: 0 0 20px var(--purple-mid);
+            "
+          ></div>
+          <div class="timeline-content">
+            <div class="revision">Revision 3</div>
+            <h4>helm rollback my-app 1</h4>
+            <p>Rolled back to v1.0.0 (safe state)</p>
+            <div class="code-block" style="font-size: 0.8rem">
+              <code>STATUS: deployed (rollback)</code>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider">Advanced Concepts</div>
+
+    <!-- ADVANCED SECTION -->
+    <section id="helpers">
+      <h2 class="advanced">
+        Named Templates and Helpers
+        <span class="level-badge level-advanced">Advanced</span>
+      </h2>
+      <p class="description">
+        Define reusable template snippets in <code>_helpers.tpl</code> to avoid
+        repetition. The underscore prefix tells Helm not to render this file as
+        a manifest.
+      </p>
+
+      <div class="helpers-demo">
+        <div class="helper-example">
+          <div>
+            <h5>Define in _helpers.tpl</h5>
+            <div class="code-block">
+              <code
+                ><span class="comment">{{/* Generate standard labels */}}</span>
+                {{- <span class="keyword">define</span>
+                <span class="string">"myapp.labels"</span> -}}
+                app.kubernetes.io/name: {{ .Chart.Name }}
+                app.kubernetes.io/instance: {{ .Release.Name }}
+                app.kubernetes.io/version: {{ .Chart.AppVersion }} {{-
+                <span class="keyword">end</span> -}}</code
+              >
+            </div>
+          </div>
+          <div>
+            <h5>Use in deployment.yaml</h5>
+            <div class="code-block">
+              <code
+                ><span class="keyword">metadata:</span>
+                <span class="keyword">labels:</span>
+                {{- <span class="keyword">include</span>
+                <span class="string">"myapp.labels"</span> . | nindent 4
+                }}</code
+              >
+            </div>
+          </div>
+        </div>
+
+        <div class="helper-example">
+          <div>
+            <h5>Common Helper: Full Name</h5>
+            <div class="code-block">
+              <code
+                >{{- <span class="keyword">define</span>
+                <span class="string">"myapp.fullname"</span> -}} {{- printf
+                "%s-%s" .Release.Name .Chart.Name | trunc 63 | trimSuffix "-" }}
+                {{- <span class="keyword">end</span> -}}</code
+              >
+            </div>
+          </div>
+          <div>
+            <h5>Result</h5>
+            <div class="code-block">
+              <code
+                ><span class="comment"># If release name is "prod"</span>
+                <span class="comment"># and chart name is "fastapi-app"</span>
+                <span class="keyword">name:</span> prod-fastapi-app</code
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="conditionals">
+      <h2 class="advanced">
+        Conditionals
+        <span class="level-badge level-advanced">Advanced</span>
+      </h2>
+      <p class="description">
+        Use <code>if</code>/<code>else</code> to conditionally include resources
+        or configuration. Toggle the switch to see how it affects the generated
+        output.
+      </p>
+
+      <div class="conditional-demo">
+        <div class="toggle-container">
+          <span>ingress.enabled:</span>
+          <div
+            class="toggle-switch"
+            id="ingress-toggle"
+            onclick="toggleIngress()"
+          ></div>
+          <span id="toggle-value">false</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem">
+          <div>
+            <h4 style="color: var(--blue-mid); margin-bottom: 1rem">
+              Template (ingress.yaml)
+            </h4>
+            <div class="code-block">
+              <code
+                >{{- <span class="keyword">if</span> .Values.ingress.enabled -}}
+                <span class="keyword">apiVersion:</span> networking.k8s.io/v1
+                <span class="keyword">kind:</span> Ingress
+                <span class="keyword">metadata:</span>
+                <span class="keyword">name:</span> {{ include "myapp.fullname" .
+                }}
+                <span class="keyword">spec:</span>
+                <span class="keyword">rules:</span>
+                - <span class="keyword">host:</span> {{ .Values.ingress.host }}
+                {{- <span class="keyword">end</span> -}}</code
+              >
+            </div>
+          </div>
+
+          <div>
+            <h4 style="color: var(--green-mid); margin-bottom: 1rem">
+              Generated Output
+            </h4>
+            <div class="conditional-output disabled" id="conditional-output">
+              <p class="not-generated">
+                No Ingress resource generated<br />(ingress.enabled = false)
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="loops">
+      <h2 class="advanced">
+        Loops with range
+        <span class="level-badge level-advanced">Advanced</span>
+      </h2>
+      <p class="description">
+        Use <code>range</code> to iterate over lists and maps, generating
+        repeated content.
+      </p>
+
+      <div class="loop-demo">
+        <h4 style="color: var(--yellow-mid); margin-bottom: 1rem">
+          values.yaml
+        </h4>
+        <div class="code-block">
+          <code
+            ><span class="keyword">env:</span> -
+            <span class="keyword">name:</span> DATABASE_URL
+            <span class="keyword">value:</span> postgres://localhost/db -
+            <span class="keyword">name:</span> REDIS_URL
+            <span class="keyword">value:</span> redis://localhost -
+            <span class="keyword">name:</span> LOG_LEVEL
+            <span class="keyword">value:</span> info</code
+          >
+        </div>
+
+        <div class="loop-items">
+          <div class="loop-item">DATABASE_URL</div>
+          <div class="loop-item">REDIS_URL</div>
+          <div class="loop-item">LOG_LEVEL</div>
+        </div>
+
+        <div
+          style="
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 1rem;
+          "
+        >
+          <div>
+            <h4 style="color: var(--blue-mid); margin-bottom: 1rem">
+              Template
+            </h4>
+            <div class="code-block">
+              <code
+                ><span class="keyword">env:</span> {{-
+                <span class="keyword">range</span> .Values.env }} -
+                <span class="keyword">name:</span> {{ .name }}
+                <span class="keyword">value:</span> {{ .value | quote }} {{-
+                <span class="keyword">end</span> }}</code
+              >
+            </div>
+          </div>
+          <div>
+            <h4 style="color: var(--green-mid); margin-bottom: 1rem">
+              Generated
+            </h4>
+            <div class="code-block">
+              <code
+                ><span class="keyword">env:</span> -
+                <span class="keyword">name:</span> DATABASE_URL
+                <span class="keyword">value:</span> "postgres://localhost/db" -
+                <span class="keyword">name:</span> REDIS_URL
+                <span class="keyword">value:</span> "redis://localhost" -
+                <span class="keyword">name:</span> LOG_LEVEL
+                <span class="keyword">value:</span> "info"</code
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="dependencies">
+      <h2 class="advanced">
+        Chart Dependencies
+        <span class="level-badge level-advanced">Advanced</span>
+      </h2>
+      <p class="description">
+        Your app needs a database? Declare it as a dependency and Helm installs
+        it automatically. Dependencies are declared in <code>Chart.yaml</code>.
+      </p>
+
+      <div class="deps-container">
+        <div class="parent-chart">
+          <h3>my-app</h3>
+          <p style="font-size: 0.9rem; opacity: 0.8">Your Application Chart</p>
+        </div>
+
+        <div class="dep-arrow">
+          <i class="icon-arrow-down"></i> depends on
+          <i class="icon-arrow-down"></i>
+        </div>
+
+        <div class="child-charts">
+          <div class="child-chart">
+            <h4>postgresql</h4>
+            <p style="font-size: 0.85rem">bitnami/postgresql</p>
+          </div>
+          <div class="child-chart">
+            <h4>redis</h4>
+            <p style="font-size: 0.85rem">bitnami/redis</p>
+          </div>
+          <div class="child-chart">
+            <h4>common</h4>
+            <p style="font-size: 0.85rem">bitnami/common</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="code-block" style="margin-top: 2rem">
+        <code
+          ><span class="comment"># Chart.yaml</span>
+          <span class="keyword">apiVersion:</span> v2
+          <span class="keyword">name:</span> my-app
+          <span class="keyword">version:</span> 1.0.0
+
+          <span class="keyword">dependencies:</span>
+          - <span class="keyword">name:</span> postgresql
+          <span class="keyword">version:</span> "12.x.x"
+          <span class="keyword">repository:</span>
+          "https://charts.bitnami.com/bitnami"
+          <span class="keyword">condition:</span> postgresql.enabled -
+          <span class="keyword">name:</span> redis
+          <span class="keyword">version:</span> "17.x.x"
+          <span class="keyword">repository:</span>
+          "https://charts.bitnami.com/bitnami"
+          <span class="keyword">condition:</span> redis.enabled</code
+        >
+      </div>
+
+      <div
+        style="
+          margin-top: 1rem;
+          padding: 1rem;
+          background: rgba(0, 0, 0, 0.2);
+          border-radius: 8px;
+        "
+      >
+        <p><strong>Commands for dependencies:</strong></p>
+        <code
+          style="display: block; margin-top: 0.5rem; color: var(--green-mid)"
+          >helm dependency update ./my-app # Download dependencies</code
+        >
+        <code
+          style="display: block; margin-top: 0.5rem; color: var(--green-mid)"
+          >helm dependency build ./my-app # Rebuild lock file</code
+        >
+      </div>
+    </section>
+
+    <section id="hooks">
+      <h2 class="advanced">
+        Lifecycle Hooks
+        <span class="level-badge level-advanced">Advanced</span>
+      </h2>
+      <p class="description">
+        Hooks let you run Jobs at specific points in the release lifecycle -
+        perfect for database migrations, backups, or validation.
+      </p>
+
+      <div class="hooks-timeline">
+        <div class="hook-stage pre-install">
+          <h5>pre-install</h5>
+          <p>Before resources</p>
+          <div class="hook-name">DB Migration Job</div>
+        </div>
+
+        <div class="hook-stage install">
+          <h5>install/upgrade</h5>
+          <p>Main resources</p>
+          <div class="hook-name">Deployment, Service</div>
+        </div>
+
+        <div class="hook-stage post-install">
+          <h5>post-install</h5>
+          <p>After resources</p>
+          <div class="hook-name">Smoke Test Job</div>
+        </div>
+      </div>
+
+      <div class="code-block" style="margin-top: 2rem">
+        <code
+          ><span class="comment"># templates/pre-install-job.yaml</span>
+          <span class="keyword">apiVersion:</span> batch/v1
+          <span class="keyword">kind:</span> Job
+          <span class="keyword">metadata:</span>
+          <span class="keyword">name:</span> {{ include "myapp.fullname" .
+          }}-db-migrate
+          <span class="keyword">annotations:</span>
+          <span class="string">"helm.sh/hook"</span>: pre-install, pre-upgrade
+          <span class="string">"helm.sh/hook-weight"</span>: "-5"
+          <span class="string">"helm.sh/hook-delete-policy"</span>:
+          before-hook-creation
+          <span class="keyword">spec:</span>
+          <span class="keyword">template:</span>
+          <span class="keyword">spec:</span>
+          <span class="keyword">containers:</span>
+          - <span class="keyword">name:</span> migrate
+          <span class="keyword">image:</span> {{ .Values.image.repository }}:{{
+          .Values.image.tag }}
+          <span class="keyword">command:</span> ["./migrate.sh"]
+          <span class="keyword">restartPolicy:</span> Never</code
+        >
+      </div>
+
+      <div
+        style="
+          margin-top: 1.5rem;
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 1rem;
+        "
+      >
+        <div
+          style="
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+          "
+        >
+          <strong style="color: var(--yellow-mid)">pre-install</strong>
+          <p style="font-size: 0.85rem; opacity: 0.8">
+            Before any resources created
+          </p>
+        </div>
+        <div
+          style="
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+          "
+        >
+          <strong style="color: var(--green-mid)">post-install</strong>
+          <p style="font-size: 0.85rem; opacity: 0.8">
+            After all resources created
+          </p>
+        </div>
+        <div
+          style="
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+          "
+        >
+          <strong style="color: var(--orange-mid)">pre-upgrade</strong>
+          <p style="font-size: 0.85rem; opacity: 0.8">Before upgrade starts</p>
+        </div>
+        <div
+          style="
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+          "
+        >
+          <strong style="color: var(--purple-mid)">post-upgrade</strong>
+          <p style="font-size: 0.85rem; opacity: 0.8">
+            After upgrade completes
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider">Best Practices</div>
+
+    <!-- BEST PRACTICES SECTION -->
+    <section id="best-practices">
+      <h2 class="best-practices">
+        Helm Best Practices
+        <span class="level-badge level-best-practices">Best Practices</span>
+      </h2>
+      <p class="description">
+        Follow these guidelines to create maintainable, production-ready Helm
+        charts.
+      </p>
+
+      <div class="practices-grid">
+        <div class="practice-card">
+          <h4><i class="icon-file-text"></i> Chart Design</h4>
+          <ul>
+            <li>Keep charts focused - one app per chart</li>
+            <li>Use semantic versioning (1.2.3)</li>
+            <li>Document all values with comments</li>
+            <li>Provide sensible defaults</li>
+            <li>Include NOTES.txt with usage info</li>
+          </ul>
+        </div>
+
+        <div class="practice-card">
+          <h4><i class="icon-settings"></i> Values Organization</h4>
+          <ul>
+            <li>Group related values together</li>
+            <li>Use nested objects for complex configs</li>
+            <li>Never put secrets in values.yaml</li>
+            <li>Use values-prod.yaml for env overrides</li>
+            <li>Validate with JSON Schema</li>
+          </ul>
+        </div>
+
+        <div class="practice-card">
+          <h4><i class="icon-shield"></i> Security</h4>
+          <ul>
+            <li>Use Kubernetes Secrets for sensitive data</li>
+            <li>Set resource limits by default</li>
+            <li>Run as non-root user</li>
+            <li>Enable network policies</li>
+            <li>Scan charts with tools like Trivy</li>
+          </ul>
+        </div>
+
+        <div class="practice-card">
+          <h4><i class="icon-check-circle"></i> Testing</h4>
+          <ul>
+            <li>Run helm lint before committing</li>
+            <li>Use helm template to preview</li>
+            <li>Write tests in templates/tests/</li>
+            <li>Test upgrades, not just installs</li>
+            <li>Use CI/CD for chart validation</li>
+          </ul>
+        </div>
+
+        <div class="practice-card">
+          <h4><i class="icon-package"></i> Dependencies</h4>
+          <ul>
+            <li>Pin dependency versions</li>
+            <li>Use conditions to make deps optional</li>
+            <li>Override sub-chart values via parent</li>
+            <li>Commit Chart.lock file</li>
+            <li>Audit dependency sources</li>
+          </ul>
+        </div>
+
+        <div class="practice-card">
+          <h4><i class="icon-rocket"></i> Production</h4>
+          <ul>
+            <li>Always use --atomic for rollback on fail</li>
+            <li>Set --timeout appropriately</li>
+            <li>Use --wait to ensure readiness</li>
+            <li>Tag releases in git</li>
+            <li>Store charts in a registry (OCI or ChartMuseum)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div
+        style="
+          margin-top: 2rem;
+          padding: 1.5rem;
+          background: rgba(0, 0, 0, 0.3);
+          border-radius: 12px;
+        "
+      >
+        <h4 style="color: var(--teal-mid); margin-bottom: 1rem">
+          Production Install Command
+        </h4>
+        <div class="code-block">
+          <code
+            >helm upgrade my-app ./chart \ --install \ --namespace production \
+            --create-namespace \ --atomic \ --timeout 5m \ --wait \ --values
+            values-prod.yaml \ --set image.tag=$CI_COMMIT_SHA</code
+          >
+        </div>
+        <p style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.8">
+          <strong>--atomic:</strong> Auto-rollback on failure |
+          <strong>--wait:</strong> Wait for pods to be ready |
+          <strong>--install:</strong> Install if not exists (upgrade --install)
+        </p>
+      </div>
+    </section>
+
+    <footer>
+      <p>Helm Visualized - Part of the Platform Engineering Learning Path</p>
+      <p style="margin-top: 0.5rem; opacity: 0.7">
+        Open this file in a browser to see all animations and interactions
+      </p>
+    </footer>
+
+    <script>
+      // File tree description toggle
+      function toggleDescription(id) {
+        const desc = document.getElementById(id)
+        const allDescs = document.querySelectorAll('.file-description')
+
+        allDescs.forEach((d) => {
+          if (d.id !== id) {
+            d.classList.remove('visible')
+          }
+        })
+
+        desc.classList.toggle('visible')
+      }
+
+      function toggleFolder(element) {
+        element.style.color =
+          element.style.color === 'rgb(249, 168, 37)'
+            ? 'var(--yellow-mid)'
+            : 'rgb(249, 168, 37)'
+      }
+
+      // Release timeline simulation
+      let currentRevision = 1
+
+      function simulateUpgrade() {
+        if (currentRevision === 1) {
+          document.getElementById('rev2').style.display = 'flex'
+          document.getElementById('rev2').style.animation = 'fadeIn 0.5s ease'
+          currentRevision = 2
+        }
+      }
+
+      function simulateRollback() {
+        if (currentRevision === 2) {
+          document.getElementById('rev3').style.display = 'flex'
+          document.getElementById('rev3').style.animation = 'fadeIn 0.5s ease'
+          currentRevision = 3
+        }
+      }
+
+      function resetTimeline() {
+        document.getElementById('rev2').style.display = 'none'
+        document.getElementById('rev3').style.display = 'none'
+        currentRevision = 1
+      }
+
+      // Conditional toggle
+      let ingressEnabled = false
+
+      function toggleIngress() {
+        ingressEnabled = !ingressEnabled
+        const toggle = document.getElementById('ingress-toggle')
+        const value = document.getElementById('toggle-value')
+        const output = document.getElementById('conditional-output')
+
+        if (ingressEnabled) {
+          toggle.classList.add('active')
+          value.textContent = 'true'
+          output.classList.remove('disabled')
+          output.innerHTML = `
+            <p class="generated">
+              <code style="display: block; background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 6px; font-size: 0.85rem;">
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: prod-fastapi-app
+spec:
+  rules:
+    - host: app.example.com
+              </code>
+            </p>
+          `
+        } else {
+          toggle.classList.remove('active')
+          value.textContent = 'false'
+          output.classList.add('disabled')
+          output.innerHTML =
+            '<p class="not-generated">No Ingress resource generated<br>(ingress.enabled = false)</p>'
+        }
+      }
+
+      // Smooth scroll for nav links
+      document.querySelectorAll('nav a').forEach((anchor) => {
+        anchor.addEventListener('click', function (e) {
+          e.preventDefault()
+          const target = document.querySelector(this.getAttribute('href'))
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        })
+      })
+
+      // Add fadeIn animation
+      const style = document.createElement('style')
+      style.textContent = `
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `
+      document.head.appendChild(style)
+    </script>
+  </body>
+</html>
