@@ -1,0 +1,32 @@
+site_name: FastAPI Platform Demo
+site_description: Documentation for the FastAPI Platform Demo application
+repo_url: https://github.com/polyglotdev/from-devops-to-platform-engineering-master-backstage-and-idps
+edit_uri: edit/main/docs/fastapi-app/docs/
+
+nav:
+  - Home: index.md
+  - API Reference: api-reference.md
+  - Deployment: deployment.md
+  - Observability: observability.md
+  - Architecture: architecture.md
+
+plugins:
+  - techdocs-core
+
+markdown_extensions:
+  - admonition
+  - codehilite
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.details
+  - pymdownx.snippets
+  - toc:
+      permalink: true
+  - tables
+  - attr_list
+  - md_in_html
