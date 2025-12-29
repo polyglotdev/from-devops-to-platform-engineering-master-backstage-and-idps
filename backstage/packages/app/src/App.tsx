@@ -58,7 +58,9 @@ const app = createApp({
     })
   },
   components: {
-    SignInPage: (props) => <SignInPage {...props} auto providers={['guest']} />
+    SignInPage: (props) => (
+      <SignInPage {...props} auto providers={['github', 'guest']} />
+    )
   }
 })
 
