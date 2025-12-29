@@ -1,0 +1,13 @@
+# Hadolint configuration
+# https://github.com/hadolint/hadolint
+
+# Treat these rules as warnings instead of errors
+ignored:
+  # DL3008: Pin versions in apt-get install
+  # Debian package versions change frequently; we rely on apt-get upgrade
+  # in the final stage to get security updates
+  - DL3008
+
+  # DL4006: Set SHELL option -o pipefail
+  # Only affects builder stage where curl pipe failure would be obvious
+  - DL4006
