@@ -1,4 +1,5 @@
-FROM python:3.12-slim AS builder
+# syntax=docker/dockerfile:1
+FROM python:3.13-slim AS builder
 
 RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates \
     && curl -LsSf https://astral.sh/uv/install.sh | sh \
@@ -17,7 +18,15 @@ COPY . .
 RUN uv sync --frozen --no-dev
 
 
-FROM python:3.12-slim
+FROM python:3.13-slim
+
+# OCI Image Labels for supply chain metadata
+LABEL org.opencontainers.image.title="FastAPI Platform Demo"
+LABEL org.opencontainers.image.description="FastAPI application with observability features for platform engineering demos"
+LABEL org.opencontainers.image.version="2.0.0"
+LABEL org.opencontainers.image.vendor="polyglotdev"
+LABEL org.opencontainers.image.source="https://github.com/polyglotdev/from-devops-to-platform-engineering-master-backstage-and-idps"
+LABEL org.opencontainers.image.licenses="MIT"
 
 RUN apt-get update && apt-get upgrade -y \
     && rm -rf /var/lib/apt/lists/*
