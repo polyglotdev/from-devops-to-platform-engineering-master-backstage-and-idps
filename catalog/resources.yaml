@@ -1,0 +1,121 @@
+---
+# Infrastructure Resources for Platform Demo
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-resource
+
+# Kubernetes Cluster Resource
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: kubernetes-cluster
+  description: |
+    Local Kubernetes cluster (OrbStack) hosting the Platform Demo application.
+    Provides container orchestration with ingress via nginx controller.
+  tags:
+    - kubernetes
+    - infrastructure
+    - container-orchestration
+  links:
+    - url: https://kubernetes.io/docs/home/
+      title: Kubernetes Documentation
+      icon: docs
+  annotations:
+    backstage.io/kubernetes-id: fastapi-app
+spec:
+  type: kubernetes-cluster
+  owner: group:infrastructure-team
+  system: platform-demo
+
+---
+# Helm Chart Resource
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: fastapi-helm-chart
+  description: |
+    Helm chart for deploying the FastAPI application to Kubernetes.
+    Includes deployment, service, ingress, and namespace configurations
+    with configurable replicas, resources, probes, and security contexts.
+  tags:
+    - helm
+    - kubernetes
+    - deployment
+    - infrastructure
+  links:
+    - url: https://github.com/polyglotdev/from-devops-to-platform-engineering-master-backstage-and-idps/tree/main/helm/fastapi-app
+      title: Helm Chart Source
+      icon: github
+    - url: https://helm.sh/docs/
+      title: Helm Documentation
+      icon: docs
+  annotations:
+    github.com/project-slug: polyglotdev/from-devops-to-platform-engineering-master-backstage-and-idps
+spec:
+  type: helm-chart
+  owner: group:infrastructure-team
+  system: platform-demo
+  dependsOn:
+    - resource:kubernetes-cluster
+
+---
+# ArgoCD Application Resource
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: argocd-fastapi-app
+  description: |
+    ArgoCD Application for GitOps deployment of the FastAPI application.
+    Automatically syncs Helm chart changes from the main branch with
+    automated pruning and self-healing enabled. Integrated with ArgoCD
+    Image Updater for automatic image tag updates.
+  tags:
+    - argocd
+    - gitops
+    - deployment
+    - automation
+  links:
+    - url: https://github.com/polyglotdev/from-devops-to-platform-engineering-master-backstage-and-idps/blob/main/argocd/applications/fastapi-app.yaml
+      title: ArgoCD Application Manifest
+      icon: github
+    - url: https://argo-cd.readthedocs.io/
+      title: ArgoCD Documentation
+      icon: docs
+  annotations:
+    argocd/app-name: fastapi-app
+    github.com/project-slug: polyglotdev/from-devops-to-platform-engineering-master-backstage-and-idps
+spec:
+  type: argocd-application
+  owner: group:infrastructure-team
+  system: platform-demo
+  dependsOn:
+    - resource:kubernetes-cluster
+    - resource:fastapi-helm-chart
+
+---
+# Docker Image Resource
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: fastapi-docker-image
+  description: |
+    Multi-architecture Docker image for the FastAPI application.
+    Built with Python 3.13-slim base, includes SBOM and provenance
+    attestations for supply chain security. Supports linux/amd64
+    and linux/arm64 platforms.
+  tags:
+    - docker
+    - container
+    - image
+    - security
+  links:
+    - url: https://hub.docker.com/r/domniniquehallan/python-fastapi-app
+      title: Docker Hub Repository
+      icon: docker
+    - url: https://github.com/polyglotdev/from-devops-to-platform-engineering-master-backstage-and-idps/blob/main/Dockerfile
+      title: Dockerfile Source
+      icon: github
+  annotations:
+    docker.io/repository: domniniquehallan/python-fastapi-app
+spec:
+  type: docker-image
+  owner: group:platform-team
+  system: platform-demo
