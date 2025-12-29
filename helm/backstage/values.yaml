@@ -32,19 +32,19 @@ backstage:
   appConfig:
     app:
       title: HealthBridge Financial
-      baseUrl: http://backstage.k8s.orb.local
+      baseUrl: https://backstage.k8s.orb.local
 
     organization:
       name: HealthBridge Financial
 
     backend:
-      baseUrl: http://backstage.k8s.orb.local
+      baseUrl: https://backstage.k8s.orb.local
       listen:
         port: 7007
       csp:
         connect-src: ["'self'", 'http:', 'https:']
       cors:
-        origin: http://backstage.k8s.orb.local
+        origin: https://backstage.k8s.orb.local
         methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
         credentials: true
       database:
