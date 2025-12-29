@@ -71,6 +71,9 @@ backstage:
           production:
             clientId: ${GITHUB_AUTH_CLIENT_ID}
             clientSecret: ${GITHUB_AUTH_CLIENT_SECRET}
+            signIn:
+              resolvers:
+                - resolver: usernameMatchingUserEntityName
 
     # Catalog configuration
     catalog:
