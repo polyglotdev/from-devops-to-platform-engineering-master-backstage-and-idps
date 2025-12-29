@@ -37,23 +37,55 @@ auth:
         clientSecret: ${GITHUB_AUTH_CLIENT_SECRET}
 
 catalog:
-  # Overrides the default list locations from app-config.yaml as these contain example data.
-  # See https://backstage.io/docs/features/software-catalog/#adding-components-to-the-catalog for more details
-  # on how to get entities into the catalog.
+  # Production catalog configuration
+  # File locations are relative to the backend process root (typically container root)
+  rules:
+    - allow: [Component, System, API, Resource, Location, Domain, Group, User, Template]
   locations:
-    # Local example data, replace this with your production config, these are intended for demo use only.
-    # File locations are relative to the backend process, typically in a deployed context, such as in a Docker container, this will be the root
+    # Platform Demo Catalog - Organization Structure
     - type: file
-      target: ./examples/entities.yaml
+      target: ./catalog/groups.yaml
+      rules:
+        - allow: [User, Group]
 
-    # Local example template
+    # Platform Demo Catalog - Domain
+    - type: file
+      target: ./catalog/domain.yaml
+      rules:
+        - allow: [Domain]
+
+    # Platform Demo Catalog - System
+    - type: file
+      target: ./catalog/system.yaml
+      rules:
+        - allow: [System]
+
+    # Platform Demo Catalog - Infrastructure Resources
+    - type: file
+      target: ./catalog/resources.yaml
+      rules:
+        - allow: [Resource]
+
+    # Platform Demo Catalog - CI/CD Pipelines
+    - type: file
+      target: ./catalog/pipelines.yaml
+      rules:
+        - allow: [Component]
+
+    # Platform Demo Catalog - API Definition
+    - type: file
+      target: ./catalog/fastapi-api.yaml
+      rules:
+        - allow: [API]
+
+    # Platform Demo Catalog - FastAPI Service
+    - type: file
+      target: ./catalog/fastapi-service.yaml
+      rules:
+        - allow: [Component]
+
+    # Software Templates
     - type: file
       target: ./examples/template/template.yaml
       rules:
         - allow: [Template]
-
-    # Local example organizational data
-    - type: file
-      target: ./examples/org.yaml
-      rules:
-        - allow: [User, Group]
