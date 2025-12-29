@@ -1,0 +1,18 @@
+[
+  {
+    "fileName": "main-overview.mdc",
+    "description": "Complete system overview covering the health management system and telemetry architecture"
+  },
+  {
+    "fileName": "health-management.mdc",
+    "description": "Detailed documentation of the custom readiness probe toggle mechanism and health metrics implementation"
+  },
+  {
+    "fileName": "telemetry-system.mdc",
+    "description": "Documentation of the telemetry aggregation system including data collection, processing, and exposure"
+  },
+  {
+    "fileName": "search-implementation.mdc",
+    "description": "Documentation of the custom Backstage search filter implementation and entity-documentation linking"
+  }
+]
