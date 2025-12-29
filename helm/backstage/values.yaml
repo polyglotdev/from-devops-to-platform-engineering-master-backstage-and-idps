@@ -16,6 +16,8 @@ backstage:
     registry: docker.io
     repository: domniniquehallan/backstage
     tag: latest
+    pullSecrets:
+      - dockerhub-creds
 
   # Resource limits for local development
   resources:
