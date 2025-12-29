@@ -36,7 +36,7 @@ probes:
     timeoutSeconds: 10
     failureThreshold: 3
   readiness:
-    path: /api/v1/healthz
+    path: /api/v1/ready
     initialDelaySeconds: 5
     periodSeconds: 10
     timeoutSeconds: 5
