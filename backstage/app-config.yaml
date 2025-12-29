@@ -80,33 +80,55 @@ catalog:
     entityFilename: catalog-info.yaml
     pullRequestBranchName: backstage-integration
   rules:
-    - allow: [Component, System, API, Resource, Location]
+    - allow: [Component, System, API, Resource, Location, Domain, Group, User, Template]
   locations:
-    # Local example data, file locations are relative to the backend process, typically `packages/backend`
+    # Platform Demo Catalog - Organization Structure
     - type: file
-      target: ../../examples/entities.yaml
+      target: ../../catalog/groups.yaml
+      rules:
+        - allow: [User, Group]
 
-    # Local example template
+    # Platform Demo Catalog - Domain
+    - type: file
+      target: ../../catalog/domain.yaml
+      rules:
+        - allow: [Domain]
+
+    # Platform Demo Catalog - System
+    - type: file
+      target: ../../catalog/system.yaml
+      rules:
+        - allow: [System]
+
+    # Platform Demo Catalog - Infrastructure Resources
+    - type: file
+      target: ../../catalog/resources.yaml
+      rules:
+        - allow: [Resource]
+
+    # Platform Demo Catalog - CI/CD Pipelines
+    - type: file
+      target: ../../catalog/pipelines.yaml
+      rules:
+        - allow: [Component]
+
+    # Platform Demo Catalog - API Definition
+    - type: file
+      target: ../../catalog/fastapi-api.yaml
+      rules:
+        - allow: [API]
+
+    # Platform Demo Catalog - FastAPI Service
+    - type: file
+      target: ../../catalog/fastapi-service.yaml
+      rules:
+        - allow: [Component]
+
+    # Local example template (Software Templates)
     - type: file
       target: ../../examples/template/template.yaml
       rules:
         - allow: [Template]
-
-    # Local example organizational data
-    - type: file
-      target: ../../examples/org.yaml
-      rules:
-        - allow: [User, Group]
-
-    ## Uncomment these lines to add more example data
-    # - type: url
-    #   target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all.yaml
-
-    ## Uncomment these lines to add an example org
-    # - type: url
-    #   target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/acme-corp.yaml
-    #   rules:
-    #     - allow: [User, Group]
 
 kubernetes:
   # see https://backstage.io/docs/features/kubernetes/configuration for kubernetes configuration options
