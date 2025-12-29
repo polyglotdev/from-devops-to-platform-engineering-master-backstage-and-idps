@@ -14,7 +14,8 @@ metadata:
     Platform Engineering domain encompassing all developer experience initiatives,
     infrastructure automation, and internal developer platform components.
   annotations:
-    backstage.io/techdocs-ref: dir:.
+    # TechDocs - domain doesn't have its own docs, remove this or point to shared docs
+    # backstage.io/techdocs-ref: dir:.
   tags:
     - platform
     - devex

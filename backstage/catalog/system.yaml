@@ -15,7 +15,8 @@ metadata:
     with Kubernetes deployment, GitOps via ArgoCD, comprehensive CI/CD pipelines,
     and full observability through Prometheus metrics and structured logging.
   annotations:
-    backstage.io/techdocs-ref: dir:../docs/fastapi-app
+    # TechDocs integration - using URL reference to avoid relative path restrictions
+    backstage.io/techdocs-ref: url:https://github.com/polyglotdev/from-devops-to-platform-engineering-master-backstage-and-idps/tree/main/backstage/docs/fastapi-app
   tags:
     - demo
     - fastapi
