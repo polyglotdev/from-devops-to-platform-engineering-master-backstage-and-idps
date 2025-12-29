@@ -28,8 +28,10 @@ import { Root } from './components/Root'
 import {
   AlertDisplay,
   OAuthRequestDialog,
-  SignInPage
+  SignInPage,
+  SignInProviderConfig
 } from '@backstage/core-components'
+import { githubAuthApiRef } from '@backstage/core-plugin-api'
 import { createApp } from '@backstage/app-defaults'
 import { AppRouter, FlatRoutes } from '@backstage/core-app-api'
 import { CatalogGraphPage } from '@backstage/plugin-catalog-graph'
@@ -37,6 +39,13 @@ import { RequirePermission } from '@backstage/plugin-permission-react'
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha'
 import { NotificationsPage } from '@backstage/plugin-notifications'
 import { SignalsDisplay } from '@backstage/plugin-signals'
+
+const githubProvider: SignInProviderConfig = {
+  id: 'github-auth-provider',
+  title: 'GitHub',
+  message: 'Sign in using GitHub',
+  apiRef: githubAuthApiRef
+}
 
 const app = createApp({
   apis,
@@ -59,7 +68,7 @@ const app = createApp({
   },
   components: {
     SignInPage: (props) => (
-      <SignInPage {...props} auto providers={['github', 'guest']} />
+      <SignInPage {...props} auto providers={[githubProvider, 'guest']} />
     )
   }
 })
