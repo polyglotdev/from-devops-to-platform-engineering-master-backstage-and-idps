@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kubernetes Visualized</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/lucide-static@0.294.0/font/lucide.min.css"
+    />
+    <style>
+      :root {
+        --blue-light: #e3f2fd;
+        --blue-mid: #90caf9;
+        --blue-dark: #1565c0;
+        --green-light: #e8f5e9;
+        --green-mid: #a5d6a7;
+        --green-dark: #2e7d32;
+        --orange-light: #fff3e0;
+        --orange-mid: #ffcc80;
+        --orange-dark: #e65100;
+        --pink-light: #fce4ec;
+        --pink-dark: #c2185b;
+        --red-light: #ffcdd2;
+        --red-dark: #c62828;
+        --gray-light: #eceff1;
+        --gray-dark: #607d8b;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+          Oxygen, Ubuntu, sans-serif;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        min-height: 100vh;
+        color: #fff;
+        overflow-x: hidden;
+      }
+
+      header {
+        text-align: center;
+        padding: 3rem 1rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+
+      header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      header p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+      }
+
+      nav {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        padding: 1.5rem;
+        background: rgba(0, 0, 0, 0.3);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        backdrop-filter: blur(10px);
+      }
+
+      nav a {
+        color: #fff;
+        text-decoration: none;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+      }
+
+      nav a:hover {
+        background: rgba(255, 255, 255, 0.25);
+        transform: translateY(-2px);
+      }
+
+      section {
+        max-width: 1200px;
+        margin: 3rem auto;
+        padding: 2rem;
+      }
+
+      section h2 {
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+        color: #90caf9;
+        border-bottom: 2px solid #90caf9;
+        padding-bottom: 0.5rem;
+      }
+
+      .description {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        margin-bottom: 2rem;
+        color: rgba(255, 255, 255, 0.85);
+      }
+
+      /* Traffic Flow Animation */
+      .traffic-flow {
+        position: relative;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        padding: 3rem 2rem;
+        overflow: hidden;
+      }
+
+      .flow-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      .flow-box {
+        padding: 1.5rem;
+        border-radius: 12px;
+        text-align: center;
+        min-width: 150px;
+        position: relative;
+        transition: all 0.3s ease;
+      }
+
+      .flow-box:hover {
+        transform: scale(1.05);
+      }
+
+      .flow-box h3 {
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .flow-box p {
+        font-size: 0.85rem;
+        opacity: 0.8;
+      }
+
+      .browser {
+        background: linear-gradient(135deg, var(--blue-light), var(--blue-mid));
+        color: #000;
+      }
+      .ingress-controller {
+        background: linear-gradient(
+          135deg,
+          var(--orange-light),
+          var(--orange-mid)
+        );
+        color: #000;
+      }
+      .ingress-resource {
+        background: linear-gradient(135deg, var(--orange-light), #ffe0b2);
+        color: #000;
+      }
+      .service {
+        background: linear-gradient(
+          135deg,
+          var(--green-light),
+          var(--green-mid)
+        );
+        color: #000;
+      }
+      .pod {
+        background: linear-gradient(135deg, #c8e6c9, var(--green-mid));
+        color: #000;
+      }
+      .namespace {
+        background: linear-gradient(135deg, var(--pink-light), #f8bbd9);
+        color: #000;
+      }
+
+      .flow-arrow {
+        font-size: 2rem;
+        color: #90caf9;
+        animation: pulse-arrow 1.5s infinite;
+      }
+
+      @keyframes pulse-arrow {
+        0%,
+        100% {
+          opacity: 0.5;
+          transform: translateX(0);
+        }
+        50% {
+          opacity: 1;
+          transform: translateX(5px);
+        }
+      }
+
+      /* Request Animation */
+      .request-packet {
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        background: #4fc3f7;
+        border-radius: 50%;
+        box-shadow: 0 0 20px #4fc3f7;
+        animation: travel 4s infinite;
+        opacity: 0;
+      }
+
+      .request-packet:nth-child(2) {
+        animation-delay: 1.3s;
+      }
+      .request-packet:nth-child(3) {
+        animation-delay: 2.6s;
+      }
+
+      @keyframes travel {
+        0% {
+          left: 5%;
+          opacity: 0;
+        }
+        10% {
+          opacity: 1;
+        }
+        90% {
+          opacity: 1;
+        }
+        100% {
+          left: 95%;
+          opacity: 0;
+        }
+      }
+
+      /* Pod Replicas Visualization */
+      .replica-demo {
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+        align-items: flex-start;
+      }
+
+      .deployment-box {
+        background: linear-gradient(135deg, var(--blue-light), var(--blue-mid));
+        padding: 2rem;
+        border-radius: 16px;
+        color: #000;
+        text-align: center;
+        flex: 1;
+        min-width: 200px;
+      }
+
+      .replicaset-box {
+        background: linear-gradient(
+          135deg,
+          var(--orange-light),
+          var(--orange-mid)
+        );
+        padding: 2rem;
+        border-radius: 16px;
+        color: #000;
+        flex: 1;
+        min-width: 200px;
+      }
+
+      .pods-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        flex: 2;
+        min-width: 300px;
+      }
+
+      .pod-instance {
+        background: linear-gradient(135deg, #c8e6c9, var(--green-mid));
+        padding: 1.5rem;
+        border-radius: 12px;
+        color: #000;
+        flex: 1;
+        min-width: 140px;
+        animation: pod-pulse 2s infinite;
+        position: relative;
+      }
+
+      .pod-instance.healthy::after {
+        content: '';
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 12px;
+        height: 12px;
+        background: var(--green-dark);
+        border-radius: 50%;
+        animation: heartbeat 1s infinite;
+      }
+
+      @keyframes pod-pulse {
+        0%,
+        100% {
+          box-shadow: 0 0 0 0 rgba(46, 125, 50, 0.4);
+        }
+        50% {
+          box-shadow: 0 0 0 10px rgba(46, 125, 50, 0);
+        }
+      }
+
+      @keyframes heartbeat {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.2);
+        }
+      }
+
+      /* Service Load Balancing */
+      .load-balance-demo {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        padding: 2rem;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .service-hub {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2rem;
+      }
+
+      .service-node {
+        background: linear-gradient(
+          135deg,
+          var(--orange-light),
+          var(--orange-mid)
+        );
+        padding: 2rem 3rem;
+        border-radius: 50%;
+        color: #000;
+        font-weight: bold;
+        position: relative;
+        z-index: 2;
+      }
+
+      .pods-row {
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .pod-target {
+        background: linear-gradient(135deg, #c8e6c9, var(--green-mid));
+        padding: 1.5rem 2rem;
+        border-radius: 12px;
+        color: #000;
+        position: relative;
+      }
+
+      .connection-line {
+        position: absolute;
+        height: 3px;
+        background: linear-gradient(90deg, var(--orange-mid), var(--green-mid));
+        top: 50%;
+        left: 50%;
+        transform-origin: left center;
+        animation: pulse-line 2s infinite;
+      }
+
+      @keyframes pulse-line {
+        0%,
+        100% {
+          opacity: 0.3;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
+
+      /* Port Listening Visualization */
+      .port-demo {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        padding: 2rem;
+      }
+
+      .container-ports {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 3rem;
+        padding-top: 1rem;
+      }
+
+      .port-door {
+        width: 80px;
+        height: 120px;
+        background: var(--gray-light);
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #000;
+        position: relative;
+        transition: all 0.3s ease;
+      }
+
+      .port-door.closed {
+        animation: closed-pulse 2s infinite;
+      }
+
+      @keyframes closed-pulse {
+        0%,
+        100% {
+          box-shadow: 0 0 0 2px rgba(198, 40, 40, 0.3);
+        }
+        50% {
+          box-shadow: 0 0 0 4px rgba(198, 40, 40, 0.6),
+            0 0 15px rgba(198, 40, 40, 0.3);
+        }
+      }
+
+      .port-door.listening {
+        animation: listening-color-pulse 2s infinite, door-glow 2s infinite;
+      }
+
+      @keyframes listening-color-pulse {
+        0%,
+        100% {
+          background: linear-gradient(135deg, #a5d6a7, #66bb6a);
+        }
+        25% {
+          background: linear-gradient(135deg, #81c784, #4caf50);
+        }
+        50% {
+          background: linear-gradient(135deg, #66bb6a, #43a047);
+        }
+        75% {
+          background: linear-gradient(135deg, #81c784, #4caf50);
+        }
+      }
+
+      .port-door.listening::before {
+        content: 'LISTENING';
+        position: absolute;
+        top: -30px;
+        font-size: 0.75rem;
+        color: var(--green-mid);
+        font-weight: bold;
+        text-shadow: 0 0 10px rgba(46, 125, 50, 0.5);
+        animation: listening-text-pulse 2s infinite;
+      }
+
+      @keyframes listening-text-pulse {
+        0%,
+        100% {
+          opacity: 0.7;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
+
+      @keyframes door-glow {
+        0%,
+        100% {
+          box-shadow: 0 0 10px rgba(46, 125, 50, 0.5);
+        }
+        50% {
+          box-shadow: 0 0 30px rgba(46, 125, 50, 0.8),
+            0 0 50px rgba(46, 125, 50, 0.4);
+        }
+      }
+
+      .port-number {
+        font-size: 1.2rem;
+        font-weight: bold;
+      }
+
+      .port-status {
+        font-size: 0.75rem;
+        margin-top: 0.5rem;
+      }
+
+      /* Ingress vs Ingress Controller */
+      .ingress-comparison {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+      }
+
+      .ingress-card {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+        padding: 2rem;
+        border: 2px solid transparent;
+        transition: all 0.3s ease;
+      }
+
+      .ingress-card:hover {
+        border-color: var(--orange-mid);
+        transform: translateY(-5px);
+      }
+
+      .ingress-card h3 {
+        color: var(--orange-mid);
+        margin-bottom: 1rem;
+        font-size: 1.3rem;
+      }
+
+      .ingress-card .icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .ingress-card .icon i {
+        font-size: 2rem;
+      }
+
+      .ingress-card .icon.controller {
+        background: linear-gradient(
+          135deg,
+          var(--orange-light),
+          var(--orange-mid)
+        );
+        color: var(--orange-dark);
+      }
+
+      .ingress-card .icon.resource {
+        background: linear-gradient(
+          135deg,
+          var(--green-light),
+          var(--green-mid)
+        );
+        color: var(--green-dark);
+      }
+
+      .ingress-card ul {
+        list-style: none;
+        margin-top: 1rem;
+      }
+
+      .ingress-card li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      /* Namespace Visualization */
+      .namespace-cluster {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        padding: 2rem;
+      }
+
+      .cluster-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+      }
+
+      .ns-box {
+        padding: 1.5rem;
+        border-radius: 12px;
+        position: relative;
+        min-height: 150px;
+      }
+
+      .ns-box h4 {
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid currentColor;
+      }
+
+      .ns-box.kube-system {
+        background: linear-gradient(135deg, var(--red-light), #ef9a9a);
+        color: #000;
+      }
+
+      .ns-box.ingress-nginx {
+        background: linear-gradient(
+          135deg,
+          var(--orange-light),
+          var(--orange-mid)
+        );
+        color: #000;
+      }
+
+      .ns-box.platform-demo {
+        background: linear-gradient(
+          135deg,
+          var(--green-light),
+          var(--green-mid)
+        );
+        color: #000;
+      }
+
+      .ns-box.default {
+        background: var(--gray-light);
+        color: #000;
+      }
+
+      .resource-list {
+        font-size: 0.85rem;
+      }
+
+      .resource-list div {
+        padding: 0.25rem 0;
+      }
+
+      /* Interactive Controls */
+      .controls {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+      }
+
+      button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: #fff;
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+      }
+
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+      }
+
+      button:active {
+        transform: translateY(0);
+      }
+
+      /* Legend */
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .legend-color {
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+      }
+
+      /* Footer */
+      footer {
+        text-align: center;
+        padding: 2rem;
+        background: rgba(0, 0, 0, 0.3);
+        margin-top: 3rem;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        header h1 {
+          font-size: 1.8rem;
+        }
+        section {
+          padding: 1rem;
+        }
+        .flow-container {
+          flex-direction: column;
+        }
+        .flow-arrow {
+          transform: rotate(90deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Kubernetes Visualized</h1>
+      <p>Interactive animations to understand Kubernetes concepts</p>
+    </header>
+
+    <nav>
+      <a href="#traffic-flow">Traffic Flow</a>
+      <a href="#pods">Pods and Replicas</a>
+      <a href="#ports">Port Listening</a>
+      <a href="#services">Services</a>
+      <a href="#ingress">Ingress</a>
+      <a href="#namespaces">Namespaces</a>
+    </nav>
+
+    <section id="traffic-flow">
+      <h2>The Complete Traffic Flow</h2>
+      <p class="description">
+        When a request arrives at your Kubernetes cluster, it travels through
+        multiple layers before reaching your application. Watch the animated
+        packets flow from your browser to the pods.
+      </p>
+
+      <div class="traffic-flow">
+        <div class="request-packet"></div>
+        <div class="request-packet"></div>
+        <div class="request-packet"></div>
+
+        <div class="flow-container">
+          <div class="flow-box browser">
+            <h3>Browser</h3>
+            <p>fastapi-app.k8s.orb.local</p>
+          </div>
+
+          <span class="flow-arrow">&#8594;</span>
+
+          <div class="flow-box ingress-controller">
+            <h3>Ingress Controller</h3>
+            <p>NGINX (receives all traffic)</p>
+          </div>
+
+          <span class="flow-arrow">&#8594;</span>
+
+          <div class="flow-box service">
+            <h3>Service</h3>
+            <p>fastapi-app:80</p>
+          </div>
+
+          <span class="flow-arrow">&#8594;</span>
+
+          <div class="flow-box pod">
+            <h3>Pods</h3>
+            <p>Container:8000</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-color" style="background: var(--blue-mid)"></div>
+          <span>External (Browser)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background: var(--orange-mid)"></div>
+          <span>Ingress Layer</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background: var(--green-mid)"></div>
+          <span>Application Layer</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="pods">
+      <h2>Pods, Deployments, and Self-Healing</h2>
+      <p class="description">
+        A Deployment creates a ReplicaSet, which ensures the desired number of
+        Pods are always running. If a Pod dies, the ReplicaSet automatically
+        creates a new one. Watch the green dots pulse to indicate healthy pods.
+      </p>
+
+      <div class="controls">
+        <button onclick="simulatePodCrash()">Simulate Pod Crash</button>
+        <button onclick="scalePods()">Scale to 3 Pods</button>
+        <button onclick="resetPods()">Reset</button>
+      </div>
+
+      <div class="replica-demo">
+        <div class="deployment-box">
+          <h3>Deployment</h3>
+          <p>fastapi-app</p>
+          <p style="margin-top: 0.5rem; font-size: 0.9rem">
+            replicas: <span id="replica-count">2</span>
+          </p>
+        </div>
+
+        <div class="replicaset-box">
+          <h3>ReplicaSet</h3>
+          <p>Manages pod lifecycle</p>
+          <p style="margin-top: 0.5rem; font-size: 0.9rem">
+            Current: <span id="current-pods">2</span>
+          </p>
+        </div>
+
+        <div class="pods-container" id="pods-container">
+          <div class="pod-instance healthy">
+            <h4>Pod 1</h4>
+            <p>fastapi-app</p>
+            <p style="font-size: 0.8rem">:8000</p>
+          </div>
+          <div class="pod-instance healthy">
+            <h4>Pod 2</h4>
+            <p>fastapi-app</p>
+            <p style="font-size: 0.8rem">:8000</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="ports">
+      <h2>What "Listening on a Port" Means</h2>
+      <p class="description">
+        A container has many ports (like doors on a building), but only the
+        ports where your application is actively listening will respond to
+        requests. Port 8000 is glowing green because FastAPI/Uvicorn is
+        listening there.
+      </p>
+
+      <div class="port-demo">
+        <h3 style="text-align: center; margin-bottom: 0">Container Ports</h3>
+        <div class="container-ports">
+          <div class="port-door closed">
+            <span class="port-number">22</span>
+            <span class="port-status">closed</span>
+          </div>
+          <div class="port-door closed">
+            <span class="port-number">80</span>
+            <span class="port-status">closed</span>
+          </div>
+          <div class="port-door closed">
+            <span class="port-number">443</span>
+            <span class="port-status">closed</span>
+          </div>
+          <div class="port-door listening">
+            <span class="port-number">8000</span>
+            <span class="port-status">FastAPI</span>
+          </div>
+          <div class="port-door closed">
+            <span class="port-number">9000</span>
+            <span class="port-status">closed</span>
+          </div>
+        </div>
+
+        <div
+          style="
+            text-align: center;
+            margin-top: 2rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+          "
+        >
+          <code style="color: var(--green-mid)"
+            >uvicorn.run(app, host="0.0.0.0", port=8000)</code
+          >
+          <p style="margin-top: 0.5rem; font-size: 0.9rem; opacity: 0.8">
+            The app binds to 0.0.0.0:8000 - listening on all interfaces,
+            accepting external traffic
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="services">
+      <h2>Services: Stable Endpoints with Load Balancing</h2>
+      <p class="description">
+        Pods are ephemeral - they come and go with new IP addresses. A Service
+        provides a stable IP and DNS name that never changes, and load balances
+        traffic across all healthy pods.
+      </p>
+
+      <div class="load-balance-demo">
+        <div class="service-hub">
+          <div style="text-align: center">
+            <p style="margin-bottom: 0.5rem; color: var(--orange-mid)">
+              Stable IP: 192.168.194.100
+            </p>
+            <p style="font-size: 0.85rem; opacity: 0.8">
+              DNS: fastapi-app.platform-demo.svc.cluster.local
+            </p>
+          </div>
+
+          <div class="service-node">
+            Service<br />
+            <span style="font-size: 0.9rem">Port 80</span>
+          </div>
+
+          <div style="text-align: center; color: var(--blue-mid)">
+            <span style="font-size: 1.5rem">&#8595; &#8595; &#8595;</span>
+            <p style="font-size: 0.9rem">Load Balancing</p>
+          </div>
+
+          <div class="pods-row">
+            <div class="pod-target">
+              <strong>Pod A</strong><br />
+              <span style="font-size: 0.85rem">192.168.1.50:8000</span>
+            </div>
+            <div class="pod-target">
+              <strong>Pod B</strong><br />
+              <span style="font-size: 0.85rem">192.168.1.51:8000</span>
+            </div>
+          </div>
+        </div>
+
+        <div
+          style="
+            margin-top: 2rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+          "
+        >
+          <p><strong>Why Services Matter:</strong></p>
+          <ul style="margin-top: 0.5rem; margin-left: 1.5rem; line-height: 1.8">
+            <li>
+              Pod IPs change when pods restart - Service IP stays the same
+            </li>
+            <li>Other apps use the DNS name, never hardcode pod IPs</li>
+            <li>Traffic is distributed across healthy pods automatically</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="ingress">
+      <h2>Ingress Controller vs Ingress Resource</h2>
+      <p class="description">
+        Two different things, both called "Ingress". Understanding the
+        difference is key to setting up external access correctly.
+      </p>
+
+      <div class="ingress-comparison">
+        <div class="ingress-card">
+          <div class="icon controller"><i class="icon-server"></i></div>
+          <h3>Ingress Controller</h3>
+          <p>The actual running NGINX pods that receive traffic</p>
+          <ul>
+            <li>Installed once per cluster</li>
+            <li>Lives in ingress-nginx namespace</li>
+            <li>The "receptionist" at the door</li>
+            <li>Reads all Ingress Resources</li>
+          </ul>
+          <div
+            style="
+              margin-top: 1rem;
+              padding: 0.75rem;
+              background: rgba(0, 0, 0, 0.2);
+              border-radius: 8px;
+              font-size: 0.85rem;
+            "
+          >
+            <code>kubectl get pods -n ingress-nginx</code>
+          </div>
+        </div>
+
+        <div class="ingress-card">
+          <div class="icon resource"><i class="icon-file-code"></i></div>
+          <h3>Ingress Resource</h3>
+          <p>A YAML config defining routing rules</p>
+          <ul>
+            <li>One per app/service you expose</li>
+            <li>Lives in your app's namespace</li>
+            <li>The "directory" listing</li>
+            <li>Maps hostname to service</li>
+          </ul>
+          <div
+            style="
+              margin-top: 1rem;
+              padding: 0.75rem;
+              background: rgba(0, 0, 0, 0.2);
+              border-radius: 8px;
+              font-size: 0.85rem;
+            "
+          >
+            <code>kubectl get ingress -n platform-demo</code>
+          </div>
+        </div>
+      </div>
+
+      <div
+        style="
+          margin-top: 2rem;
+          padding: 1.5rem;
+          background: rgba(255, 255, 255, 0.05);
+          border-radius: 12px;
+          text-align: center;
+        "
+      >
+        <p style="font-size: 1.1rem">
+          <strong style="color: var(--orange-mid)">Ingress Controller</strong> =
+          Receptionist at building entrance<br />
+          <strong style="color: var(--green-mid)">Ingress Resource</strong> =
+          Directory that says "FastAPI App is in Room 80"
+        </p>
+      </div>
+    </section>
+
+    <section id="namespaces">
+      <h2>Namespaces: Organizational Boundaries</h2>
+      <p class="description">
+        Namespaces are logical partitions within a cluster - like cubby holes or
+        folders. They provide isolation for names, resources, and access
+        control.
+      </p>
+
+      <div class="namespace-cluster">
+        <h3 style="text-align: center; margin-bottom: 1rem">
+          Kubernetes Cluster
+        </h3>
+
+        <div class="cluster-container">
+          <div class="ns-box kube-system">
+            <h4>kube-system</h4>
+            <div class="resource-list">
+              <div>CoreDNS</div>
+              <div>Scheduler</div>
+              <div>Controller Manager</div>
+            </div>
+          </div>
+
+          <div class="ns-box ingress-nginx">
+            <h4>ingress-nginx</h4>
+            <div class="resource-list">
+              <div>NGINX Controller</div>
+              <div>Admission Webhook</div>
+            </div>
+          </div>
+
+          <div class="ns-box platform-demo">
+            <h4>platform-demo</h4>
+            <div class="resource-list">
+              <div>Deployment: fastapi-app</div>
+              <div>Service: fastapi-app</div>
+              <div>Ingress: fastapi-app</div>
+              <div>Pods (x2)</div>
+            </div>
+          </div>
+
+          <div class="ns-box default">
+            <h4>default</h4>
+            <div class="resource-list">
+              <div style="opacity: 0.6">(empty)</div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          style="
+            margin-top: 2rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+          "
+        >
+          <p><strong>Benefits of Namespaces:</strong></p>
+          <div
+            style="
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+              gap: 1rem;
+              margin-top: 1rem;
+            "
+          >
+            <div>Name isolation</div>
+            <div>Resource quotas</div>
+            <div>Access control (RBAC)</div>
+            <div>Network policies</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <p>
+        Kubernetes Visualized - Part of the Platform Engineering Learning Path
+      </p>
+      <p style="margin-top: 0.5rem; opacity: 0.7">
+        Open this file in a browser to see all animations
+      </p>
+    </footer>
+
+    <script>
+      // Pod simulation functions
+      let podCount = 2
+
+      function simulatePodCrash() {
+        const container = document.getElementById('pods-container')
+        const pods = container.querySelectorAll('.pod-instance')
+
+        if (pods.length > 0) {
+          // Mark first pod as crashed
+          const crashedPod = pods[0]
+          crashedPod.style.background =
+            'linear-gradient(135deg, #ffcdd2, #ef9a9a)'
+          crashedPod.classList.remove('healthy')
+          crashedPod.querySelector('h4').textContent = 'Pod (crashed)'
+
+          // After 1.5 seconds, "self-heal"
+          setTimeout(() => {
+            crashedPod.style.background =
+              'linear-gradient(135deg, #c8e6c9, #a5d6a7)'
+            crashedPod.classList.add('healthy')
+            crashedPod.querySelector('h4').textContent = 'Pod 3 (new)'
+          }, 1500)
+        }
+      }
+
+      function scalePods() {
+        const container = document.getElementById('pods-container')
+        if (podCount < 3) {
+          const newPod = document.createElement('div')
+          newPod.className = 'pod-instance healthy'
+          newPod.innerHTML = `
+                    <h4>Pod ${podCount + 1}</h4>
+                    <p>fastapi-app</p>
+                    <p style="font-size: 0.8rem;">:8000</p>
+                `
+          newPod.style.animation = 'pod-pulse 2s infinite, fadeIn 0.5s ease'
+          container.appendChild(newPod)
+          podCount++
+          document.getElementById('replica-count').textContent = podCount
+          document.getElementById('current-pods').textContent = podCount
+        }
+      }
+
+      function resetPods() {
+        const container = document.getElementById('pods-container')
+        container.innerHTML = `
+                <div class="pod-instance healthy">
+                    <h4>Pod 1</h4>
+                    <p>fastapi-app</p>
+                    <p style="font-size: 0.8rem;">:8000</p>
+                </div>
+                <div class="pod-instance healthy">
+                    <h4>Pod 2</h4>
+                    <p>fastapi-app</p>
+                    <p style="font-size: 0.8rem;">:8000</p>
+                </div>
+            `
+        podCount = 2
+        document.getElementById('replica-count').textContent = '2'
+        document.getElementById('current-pods').textContent = '2'
+      }
+
+      // Add fadeIn animation dynamically
+      const style = document.createElement('style')
+      style.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0; transform: scale(0.8); }
+                to { opacity: 1; transform: scale(1); }
+            }
+        `
+      document.head.appendChild(style)
+    </script>
+  </body>
+</html>
