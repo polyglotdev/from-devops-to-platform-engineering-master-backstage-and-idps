@@ -1,0 +1,34 @@
+---
+# System: Platform Demo
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-system
+#
+# A system is a collection of resources and components that share a common purpose.
+# The Platform Demo system showcases a production-ready FastAPI application with
+# full observability, GitOps deployment, and CI/CD automation.
+
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: platform-demo
+  description: |
+    Platform Demo system showcasing a production-ready FastAPI application
+    with Kubernetes deployment, GitOps via ArgoCD, comprehensive CI/CD pipelines,
+    and full observability through Prometheus metrics and structured logging.
+  annotations:
+    backstage.io/techdocs-ref: dir:../docs/fastapi-app
+  tags:
+    - demo
+    - fastapi
+    - kubernetes
+    - gitops
+    - observability
+  links:
+    - url: https://github.com/polyglotdev/from-devops-to-platform-engineering-master-backstage-and-idps
+      title: GitHub Repository
+      icon: github
+    - url: https://hub.docker.com/r/domniniquehallan/python-fastapi-app
+      title: Docker Hub
+      icon: docker
+spec:
+  owner: group:platform-team
+  domain: platform-engineering
