@@ -2,7 +2,7 @@ replicaCount: 2
 
 image:
   repository: domniniquehallan/python-fastapi-app
-  tag: v1
+  tag: v2
   pullPolicy: IfNotPresent
 
 nameOverride: ""
