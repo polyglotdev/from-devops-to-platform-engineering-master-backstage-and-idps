@@ -1,0 +1,127 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: backstage
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    repoURL: https://backstage.github.io/charts
+    chart: backstage
+    targetRevision: 2.6.0
+    helm:
+      valueFiles: []
+      values: |
+        ingress:
+          enabled: true
+          className: nginx
+          host: backstage.k8s.orb.local
+          annotations:
+            nginx.ingress.kubernetes.io/force-ssl-redirect: 'false'
+            nginx.ingress.kubernetes.io/backend-protocol: HTTP
+
+        backstage:
+          image:
+            registry: docker.io
+            repository: domniniquehallan/backstage
+            tag: latest
+
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+
+          appConfig:
+            app:
+              title: Platform Engineering Portal
+              baseUrl: http://backstage.k8s.orb.local
+
+            organization:
+              name: Platform Team
+
+            backend:
+              baseUrl: http://backstage.k8s.orb.local
+              listen:
+                port: 7007
+              csp:
+                connect-src: ["'self'", 'http:', 'https:']
+              cors:
+                origin: http://backstage.k8s.orb.local
+                methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
+                credentials: true
+              database:
+                client: pg
+                connection:
+                  host: ${POSTGRES_HOST}
+                  port: ${POSTGRES_PORT}
+                  user: ${POSTGRES_USER}
+                  password: ${POSTGRES_PASSWORD}
+
+            techdocs:
+              builder: local
+              generator:
+                runIn: local
+              publisher:
+                type: local
+
+            catalog:
+              import:
+                entityFilename: catalog-info.yaml
+                pullRequestBranchName: backstage-integration
+              rules:
+                - allow: [Component, System, API, Resource, Location, Template, Group, User]
+              locations: []
+
+          extraEnvVars:
+            - name: POSTGRES_HOST
+              value: backstage-postgresql
+            - name: POSTGRES_PORT
+              value: '5432'
+            - name: POSTGRES_USER
+              value: backstage
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: backstage-postgresql
+                  key: password
+
+        postgresql:
+          enabled: true
+          image:
+            registry: docker.io
+            repository: bitnami/postgresql
+            tag: latest
+          auth:
+            username: backstage
+            password: backstage
+            database: backstage
+          primary:
+            resources:
+              requests:
+                cpu: 100m
+                memory: 128Mi
+              limits:
+                cpu: 500m
+                memory: 256Mi
+            persistence:
+              enabled: true
+              size: 1Gi
+
+        serviceAccount:
+          create: true
+          name: backstage
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: backstage
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
