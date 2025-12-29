@@ -1,0 +1,159 @@
+---
+# CI/CD Pipeline Components for Platform Demo
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-component
+
+# CI Pipeline - Linting and Validation
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: ci-pipeline
+  title: CI Pipeline
+  description: |
+    Continuous Integration pipeline for code quality validation.
+    Runs on push and pull requests to main branch. Includes:
+    - Python linting with Ruff (check and format)
+    - Helm chart linting
+    - Dockerfile linting with Hadolint
+  tags:
+    - ci
+    - pipeline
+    - github-actions
+    - linting
+    - quality
+  links:
+    - url: https://github.com/polyglotdev/from-devops-to-platform-engineering-master-backstage-and-idps/actions/workflows/ci.yml
+      title: GitHub Actions Workflow
+      icon: github
+    - url: https://github.com/polyglotdev/from-devops-to-platform-engineering-master-backstage-and-idps/blob/main/.github/workflows/ci.yml
+      title: Workflow Source
+      icon: code
+  annotations:
+    github.com/project-slug: polyglotdev/from-devops-to-platform-engineering-master-backstage-and-idps
+    github.com/workflow-path: .github/workflows/ci.yml
+spec:
+  type: pipeline
+  lifecycle: production
+  owner: group:platform-team
+  system: platform-demo
+
+---
+# Docker Build Pipeline
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: docker-build-pipeline
+  title: Docker Build Pipeline
+  description: |
+    Docker image build and push pipeline. Triggers on:
+    - Push to main branch
+    - Version tags (v*)
+    - Manual workflow dispatch
+    
+    Features:
+    - Multi-architecture builds (amd64, arm64)
+    - SBOM generation for supply chain security
+    - Build provenance attestation
+    - GitHub Actions cache for faster builds
+    - Automatic tagging (sha, semver, latest)
+  tags:
+    - docker
+    - pipeline
+    - github-actions
+    - build
+    - security
+  links:
+    - url: https://github.com/polyglotdev/from-devops-to-platform-engineering-master-backstage-and-idps/actions/workflows/docker-build.yml
+      title: GitHub Actions Workflow
+      icon: github
+    - url: https://hub.docker.com/r/domniniquehallan/python-fastapi-app
+      title: Docker Hub Repository
+      icon: docker
+  annotations:
+    github.com/project-slug: polyglotdev/from-devops-to-platform-engineering-master-backstage-and-idps
+    github.com/workflow-path: .github/workflows/docker-build.yml
+spec:
+  type: pipeline
+  lifecycle: production
+  owner: group:platform-team
+  system: platform-demo
+  dependsOn:
+    - resource:fastapi-docker-image
+
+---
+# Docker Scout Security Pipeline
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: docker-scout-pipeline
+  title: Docker Scout Security Pipeline
+  description: |
+    Container security scanning pipeline using Docker Scout.
+    Runs after Docker Build workflow completes and on PRs.
+    
+    Security checks:
+    - CVE vulnerability scanning with SARIF output
+    - Health score assessment
+    - Security recommendations
+    - PR comparison against latest image
+    - Blocks PRs with critical/high vulnerabilities
+  tags:
+    - security
+    - pipeline
+    - github-actions
+    - cve
+    - scanning
+  links:
+    - url: https://github.com/polyglotdev/from-devops-to-platform-engineering-master-backstage-and-idps/actions/workflows/docker-scout.yml
+      title: GitHub Actions Workflow
+      icon: github
+    - url: https://docs.docker.com/scout/
+      title: Docker Scout Documentation
+      icon: docs
+  annotations:
+    github.com/project-slug: polyglotdev/from-devops-to-platform-engineering-master-backstage-and-idps
+    github.com/workflow-path: .github/workflows/docker-scout.yml
+spec:
+  type: pipeline
+  lifecycle: production
+  owner: group:platform-team
+  system: platform-demo
+  dependsOn:
+    - component:docker-build-pipeline
+
+---
+# Release Pipeline
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: release-pipeline
+  title: Release Pipeline
+  description: |
+    Automated release management pipeline. Triggers on GitHub
+    release publication.
+    
+    Features:
+    - Automatic changelog generation from PRs
+    - Categorized release notes (features, bug fixes, docs)
+    - Triggers Docker Build via tag push
+    - Updates release description with generated changelog
+  tags:
+    - release
+    - pipeline
+    - github-actions
+    - changelog
+    - automation
+  links:
+    - url: https://github.com/polyglotdev/from-devops-to-platform-engineering-master-backstage-and-idps/actions/workflows/release.yml
+      title: GitHub Actions Workflow
+      icon: github
+    - url: https://github.com/polyglotdev/from-devops-to-platform-engineering-master-backstage-and-idps/releases
+      title: GitHub Releases
+      icon: github
+  annotations:
+    github.com/project-slug: polyglotdev/from-devops-to-platform-engineering-master-backstage-and-idps
+    github.com/workflow-path: .github/workflows/release.yml
+spec:
+  type: pipeline
+  lifecycle: production
+  owner: group:platform-team
+  system: platform-demo
