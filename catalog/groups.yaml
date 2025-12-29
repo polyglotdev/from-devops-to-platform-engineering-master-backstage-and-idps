@@ -1,0 +1,59 @@
+---
+# Organization Structure for HealthBridge Financial Platform
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-group
+
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: platform-engineering
+  description: Platform Engineering organization responsible for developer experience and infrastructure
+spec:
+  type: organization
+  children:
+    - platform-team
+    - infrastructure-team
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: platform-team
+  description: Team responsible for platform services and developer tools
+spec:
+  type: team
+  parent: platform-engineering
+  children: []
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: infrastructure-team
+  description: Team responsible for Kubernetes clusters, CI/CD, and cloud infrastructure
+spec:
+  type: team
+  parent: platform-engineering
+  children: []
+
+---
+# Users
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-user
+
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: polyglotdev
+  description: Platform Engineer and maintainer
+spec:
+  memberOf:
+    - platform-team
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: guest
+  description: Guest user for demo purposes
+spec:
+  memberOf:
+    - platform-team
