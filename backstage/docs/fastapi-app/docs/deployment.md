@@ -41,7 +41,7 @@ replicaCount: 3
 
 image:
   repository: domniniquehallan/python-fastapi-app
-  tag: "latest"
+  tag: 'latest'
 
 resources:
   requests:
@@ -148,22 +148,22 @@ kubectl apply -f k8s/ingress.yaml
 
 ### Available Values
 
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `replicaCount` | Number of pod replicas | `2` |
-| `image.repository` | Docker image repository | `domniniquehallan/python-fastapi-app` |
-| `image.tag` | Docker image tag | `1.1.0` |
-| `image.pullPolicy` | Image pull policy | `IfNotPresent` |
-| `service.type` | Kubernetes service type | `ClusterIP` |
-| `service.port` | Service port | `80` |
-| `service.targetPort` | Container port | `8000` |
-| `ingress.enabled` | Enable ingress | `true` |
-| `ingress.className` | Ingress class | `nginx` |
-| `ingress.host` | Ingress hostname | `fastapi-app.k8s.orb.local` |
-| `resources.requests.cpu` | CPU request | `100m` |
-| `resources.requests.memory` | Memory request | `128Mi` |
-| `resources.limits.cpu` | CPU limit | `500m` |
-| `resources.limits.memory` | Memory limit | `256Mi` |
+| Parameter                   | Description             | Default                               |
+| --------------------------- | ----------------------- | ------------------------------------- |
+| `replicaCount`              | Number of pod replicas  | `2`                                   |
+| `image.repository`          | Docker image repository | `domniniquehallan/python-fastapi-app` |
+| `image.tag`                 | Docker image tag        | `1.1.0`                               |
+| `image.pullPolicy`          | Image pull policy       | `IfNotPresent`                        |
+| `service.type`              | Kubernetes service type | `ClusterIP`                           |
+| `service.port`              | Service port            | `80`                                  |
+| `service.targetPort`        | Container port          | `8000`                                |
+| `ingress.enabled`           | Enable ingress          | `true`                                |
+| `ingress.className`         | Ingress class           | `nginx`                               |
+| `ingress.host`              | Ingress hostname        | `fastapi-app.k8s.orb.local`           |
+| `resources.requests.cpu`    | CPU request             | `100m`                                |
+| `resources.requests.memory` | Memory request          | `128Mi`                               |
+| `resources.limits.cpu`      | CPU limit               | `500m`                                |
+| `resources.limits.memory`   | Memory limit            | `256Mi`                               |
 
 ### Health Probes Configuration
 

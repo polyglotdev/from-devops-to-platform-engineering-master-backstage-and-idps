@@ -24,23 +24,23 @@ metadata:
   annotations:
     # TechDocs integration
     backstage.io/techdocs-ref: dir:../docs/fastapi-app
-    
+
     # GitHub integration
     github.com/project-slug: polyglotdev/from-devops-to-platform-engineering-master-backstage-and-idps
-    
+
     # Kubernetes integration
     backstage.io/kubernetes-id: fastapi-app
     backstage.io/kubernetes-namespace: platform-demo
     backstage.io/kubernetes-label-selector: app.kubernetes.io/name=fastapi-app
-    
+
     # Prometheus metrics
-    prometheus.io/scrape: "true"
+    prometheus.io/scrape: 'true'
     prometheus.io/path: /metrics
-    prometheus.io/port: "8000"
-    
+    prometheus.io/port: '8000'
+
     # ArgoCD integration
     argocd/app-name: fastapi-app
-    
+
     # Docker image
     docker.io/repository: domniniquehallan/python-fastapi-app
   links:
@@ -64,11 +64,11 @@ spec:
   lifecycle: production
   owner: group:platform-team
   system: platform-demo
-  
+
   # API provided by this service
   providesApis:
     - fastapi-rest-api
-  
+
   # Infrastructure dependencies
   dependsOn:
     - resource:kubernetes-cluster

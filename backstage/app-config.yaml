@@ -80,7 +80,18 @@ catalog:
     entityFilename: catalog-info.yaml
     pullRequestBranchName: backstage-integration
   rules:
-    - allow: [Component, System, API, Resource, Location, Domain, Group, User, Template]
+    - allow:
+        [
+          Component,
+          System,
+          API,
+          Resource,
+          Location,
+          Domain,
+          Group,
+          User,
+          Template
+        ]
   locations:
     # Platform Demo Catalog - Organization Structure
     - type: file

@@ -40,7 +40,18 @@ catalog:
   # Production catalog configuration
   # File locations are relative to the backend process root (typically container root)
   rules:
-    - allow: [Component, System, API, Resource, Location, Domain, Group, User, Template]
+    - allow:
+        [
+          Component,
+          System,
+          API,
+          Resource,
+          Location,
+          Domain,
+          Group,
+          User,
+          Template
+        ]
   locations:
     # Platform Demo Catalog - Organization Structure
     - type: file

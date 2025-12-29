@@ -48,7 +48,7 @@ metadata:
     - Push to main branch
     - Version tags (v*)
     - Manual workflow dispatch
-    
+
     Features:
     - Multi-architecture builds (amd64, arm64)
     - SBOM generation for supply chain security
@@ -89,7 +89,7 @@ metadata:
   description: |
     Container security scanning pipeline using Docker Scout.
     Runs after Docker Build workflow completes and on PRs.
-    
+
     Security checks:
     - CVE vulnerability scanning with SARIF output
     - Health score assessment
@@ -130,7 +130,7 @@ metadata:
   description: |
     Automated release management pipeline. Triggers on GitHub
     release publication.
-    
+
     Features:
     - Automatic changelog generation from PRs
     - Categorized release notes (features, bug fixes, docs)

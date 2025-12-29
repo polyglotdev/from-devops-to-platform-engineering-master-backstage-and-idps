@@ -11,37 +11,37 @@ graph TB
         dockerhub[Docker Hub Registry]
         prometheus[Prometheus]
     end
-    
+
     subgraph cicd [CI/CD Layer]
         actions[GitHub Actions]
         scout[Docker Scout]
     end
-    
+
     subgraph gitops [GitOps Layer]
         argocd[ArgoCD]
         imgupd[Image Updater]
     end
-    
+
     subgraph k8s [Kubernetes Cluster]
         ingress[Nginx Ingress]
-        
+
         subgraph ns [platform-demo namespace]
             svc[Service]
             deploy[Deployment]
             pods[Pods x2]
         end
     end
-    
+
     github -->|source| actions
     actions -->|push| dockerhub
     actions -->|trigger| scout
     dockerhub -->|pull| pods
-    
+
     github -->|sync| argocd
     dockerhub -->|watch| imgupd
     imgupd -->|update| github
     argocd -->|deploy| deploy
-    
+
     prometheus -->|scrape| pods
     ingress --> svc
     svc --> pods
@@ -59,23 +59,23 @@ sequenceDiagram
     participant P as Pod
     participant M as Middleware
     participant H as Handler
-    
+
     C->>I: HTTP Request
     I->>S: Route to Service
     S->>P: Load Balance
     P->>M: Request Middleware
-    
+
     Note over M: Generate Request ID
     Note over M: Start Timer
     Note over M: Increment In-Progress
-    
+
     M->>H: Call Handler
     H-->>M: Response
-    
+
     Note over M: Record Metrics
     Note over M: Add Headers
     Note over M: Log Request
-    
+
     M-->>P: Response
     P-->>S: Response
     S-->>I: Response
@@ -110,12 +110,12 @@ main.py
 
 ### Why FastAPI?
 
-| Requirement | FastAPI Solution |
-|-------------|------------------|
-| High Performance | Built on Starlette/Uvicorn with async support |
-| Type Safety | Pydantic validation with automatic OpenAPI docs |
-| Developer Experience | Auto-generated Swagger UI and ReDoc |
-| Python Ecosystem | Full access to Python libraries (psutil, prometheus-client) |
+| Requirement          | FastAPI Solution                                            |
+| -------------------- | ----------------------------------------------------------- |
+| High Performance     | Built on Starlette/Uvicorn with async support               |
+| Type Safety          | Pydantic validation with automatic OpenAPI docs             |
+| Developer Experience | Auto-generated Swagger UI and ReDoc                         |
+| Python Ecosystem     | Full access to Python libraries (psutil, prometheus-client) |
 
 ### Middleware Pattern
 
@@ -126,23 +126,23 @@ The application uses a single middleware for all cross-cutting concerns:
 async def request_middleware(request: Request, call_next):
     # 1. Generate/propagate request ID
     request_id = request.headers.get('X-Request-ID', str(uuid.uuid4()))
-    
+
     # 2. Track in-progress requests
     REQUESTS_IN_PROGRESS.labels(method=method, endpoint=path).inc()
-    
+
     # 3. Time the request
     start_time = time.time()
     response = await call_next(request)
     duration = time.time() - start_time
-    
+
     # 4. Record metrics
     REQUEST_COUNT.labels(...).inc()
     REQUEST_LATENCY.labels(...).observe(duration)
-    
+
     # 5. Add tracing headers
     response.headers['X-Request-ID'] = request_id
     response.headers['X-Response-Time'] = f'{duration:.4f}s'
-    
+
     return response
 ```
 
@@ -156,10 +156,10 @@ async def request_middleware(request: Request, call_next):
 
 **Liveness vs Readiness:**
 
-| Probe | Purpose | Failure Action |
-|-------|---------|----------------|
-| Liveness (`/healthz`) | Is the process alive? | Restart container |
-| Readiness (`/ready`) | Can it serve traffic? | Remove from service |
+| Probe                 | Purpose               | Failure Action      |
+| --------------------- | --------------------- | ------------------- |
+| Liveness (`/healthz`) | Is the process alive? | Restart container   |
+| Readiness (`/ready`)  | Can it serve traffic? | Remove from service |
 
 **Toggleable Readiness:**
 
@@ -237,7 +237,7 @@ graph LR
         svc --> ep[Endpoints]
         ep --> pod1[Pod 1 :8000]
         ep --> pod2[Pod 2 :8000]
-        
+
         deploy[Deployment] --> rs[ReplicaSet]
         rs --> pod1
         rs --> pod2
@@ -252,21 +252,21 @@ graph LR
         code[Code Change]
         pr[Pull Request]
     end
-    
+
     subgraph ci [CI Pipeline]
         lint[Lint]
         build[Docker Build]
         scan[Security Scan]
         push[Push Image]
     end
-    
+
     subgraph cd [CD Pipeline]
         detect[Image Updater]
         commit[Update values.yaml]
         sync[ArgoCD Sync]
         deploy[Deploy to K8s]
     end
-    
+
     code --> pr
     pr --> lint
     lint --> build
@@ -282,29 +282,29 @@ graph LR
 
 ### Container Security
 
-| Control | Implementation |
-|---------|----------------|
-| Non-root execution | `runAsUser: 1000` |
-| Read-only filesystem | `readOnlyRootFilesystem: true` |
+| Control                 | Implementation                    |
+| ----------------------- | --------------------------------- |
+| Non-root execution      | `runAsUser: 1000`                 |
+| Read-only filesystem    | `readOnlyRootFilesystem: true`    |
 | No privilege escalation | `allowPrivilegeEscalation: false` |
-| Minimal capabilities | `drop: [ALL]` |
+| Minimal capabilities    | `drop: [ALL]`                     |
 
 ### Supply Chain Security
 
-| Control | Implementation |
-|---------|----------------|
-| SBOM Generation | Docker BuildKit SBOM |
-| Build Provenance | GitHub attestations |
-| CVE Scanning | Docker Scout |
-| Signed Images | Build provenance attestation |
+| Control          | Implementation               |
+| ---------------- | ---------------------------- |
+| SBOM Generation  | Docker BuildKit SBOM         |
+| Build Provenance | GitHub attestations          |
+| CVE Scanning     | Docker Scout                 |
+| Signed Images    | Build provenance attestation |
 
 ### Network Security
 
-| Control | Implementation |
-|---------|----------------|
-| Internal service | ClusterIP service type |
-| TLS termination | Nginx Ingress |
-| CORS configured | FastAPI CORS middleware |
+| Control          | Implementation          |
+| ---------------- | ----------------------- |
+| Internal service | ClusterIP service type  |
+| TLS termination  | Nginx Ingress           |
+| CORS configured  | FastAPI CORS middleware |
 
 ## Scalability
 

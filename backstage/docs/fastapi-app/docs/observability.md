@@ -6,10 +6,10 @@ Comprehensive guide to monitoring, metrics, and logging for the FastAPI Platform
 
 The application implements the three pillars of observability:
 
-| Pillar | Implementation |
-|--------|----------------|
-| **Metrics** | Prometheus metrics via `/metrics` endpoint |
-| **Logging** | Structured JSON logs with request tracing |
+| Pillar      | Implementation                                   |
+| ----------- | ------------------------------------------------ |
+| **Metrics** | Prometheus metrics via `/metrics` endpoint       |
+| **Logging** | Structured JSON logs with request tracing        |
 | **Tracing** | Request ID propagation via `X-Request-ID` header |
 
 ## Prometheus Metrics
@@ -87,7 +87,8 @@ scrape_configs:
         action: replace
         target_label: __metrics_path__
         regex: (.+)
-      - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+      - source_labels:
+          [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
         action: replace
         regex: ([^:]+)(?::\d+)?;(\d+)
         replacement: $1:$2
@@ -98,9 +99,9 @@ The Helm chart includes the necessary annotations:
 
 ```yaml
 annotations:
-  prometheus.io/scrape: "true"
+  prometheus.io/scrape: 'true'
   prometheus.io/path: /metrics
-  prometheus.io/port: "8000"
+  prometheus.io/port: '8000'
 ```
 
 ### Useful PromQL Queries
@@ -148,12 +149,12 @@ All logs are emitted as JSON for easy parsing:
 
 ### Log Fields
 
-| Field | Description |
-|-------|-------------|
-| `time` | ISO 8601 timestamp |
-| `level` | Log level (INFO, WARNING, ERROR) |
+| Field     | Description                             |
+| --------- | --------------------------------------- |
+| `time`    | ISO 8601 timestamp                      |
+| `level`   | Log level (INFO, WARNING, ERROR)        |
 | `message` | Structured message with request details |
-| `logger` | Python logger name |
+| `logger`  | Python logger name                      |
 
 ### Request Logging
 
@@ -355,8 +356,8 @@ groups:
         labels:
           severity: critical
         annotations:
-          summary: "High error rate detected"
-          description: "Error rate is above 5% for the last 5 minutes"
+          summary: 'High error rate detected'
+          description: 'Error rate is above 5% for the last 5 minutes'
 
       - alert: HighLatency
         expr: |
@@ -365,8 +366,8 @@ groups:
         labels:
           severity: warning
         annotations:
-          summary: "High latency detected"
-          description: "95th percentile latency is above 1 second"
+          summary: 'High latency detected'
+          description: '95th percentile latency is above 1 second'
 
       - alert: PodNotReady
         expr: |
@@ -375,6 +376,6 @@ groups:
         labels:
           severity: warning
         annotations:
-          summary: "FastAPI pod not ready"
-          description: "Pod {{ $labels.pod }} has been not ready for 5 minutes"
+          summary: 'FastAPI pod not ready'
+          description: 'Pod {{ $labels.pod }} has been not ready for 5 minutes'
 ```

@@ -8,14 +8,14 @@ The FastAPI Platform Demo is a reference implementation showcasing how to build 
 
 ### Key Features
 
-| Feature | Description |
-|---------|-------------|
-| **Health Probes** | Kubernetes-native liveness and readiness endpoints with toggleable state |
-| **Prometheus Metrics** | HTTP request counters, latency histograms, and in-progress gauges |
-| **Structured Logging** | JSON-formatted logs with request IDs for traceability |
-| **Multi-arch Images** | Docker images built for both amd64 and arm64 platforms |
-| **GitOps Deployment** | Automated deployments via ArgoCD with image auto-updates |
-| **Supply Chain Security** | SBOM generation and build provenance attestations |
+| Feature                   | Description                                                              |
+| ------------------------- | ------------------------------------------------------------------------ |
+| **Health Probes**         | Kubernetes-native liveness and readiness endpoints with toggleable state |
+| **Prometheus Metrics**    | HTTP request counters, latency histograms, and in-progress gauges        |
+| **Structured Logging**    | JSON-formatted logs with request IDs for traceability                    |
+| **Multi-arch Images**     | Docker images built for both amd64 and arm64 platforms                   |
+| **GitOps Deployment**     | Automated deployments via ArgoCD with image auto-updates                 |
+| **Supply Chain Security** | SBOM generation and build provenance attestations                        |
 
 ## Quick Start
 
@@ -63,32 +63,32 @@ graph TB
         browser[Browser/Client]
         prometheus[Prometheus]
     end
-    
+
     subgraph k8s [Kubernetes Cluster]
         ingress[Nginx Ingress]
-        
+
         subgraph ns [platform-demo namespace]
             svc[Service: ClusterIP]
-            
+
             subgraph pods [Deployment: 2 replicas]
                 pod1[Pod 1]
                 pod2[Pod 2]
             end
         end
     end
-    
+
     subgraph gitops [GitOps Layer]
         argocd[ArgoCD]
         github[GitHub Repository]
         dockerhub[Docker Hub]
     end
-    
+
     browser --> ingress
     ingress --> svc
     svc --> pod1
     svc --> pod2
     prometheus -->|/metrics| svc
-    
+
     argocd -->|sync| ns
     github -->|source| argocd
     dockerhub -->|images| pods
@@ -96,16 +96,16 @@ graph TB
 
 ## API Endpoints
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/v1/hello` | GET | Simple greeting message |
-| `/api/v1/healthz` | GET | Liveness probe |
-| `/api/v1/ready` | GET | Readiness probe |
-| `/api/v1/ready/toggle` | POST | Toggle readiness state |
-| `/api/v1/details` | GET | System and request details |
-| `/api/v1/stats` | GET | System statistics |
-| `/api/v1/getdate` | GET | Current date |
-| `/metrics` | GET | Prometheus metrics |
+| Endpoint               | Method | Description                |
+| ---------------------- | ------ | -------------------------- |
+| `/api/v1/hello`        | GET    | Simple greeting message    |
+| `/api/v1/healthz`      | GET    | Liveness probe             |
+| `/api/v1/ready`        | GET    | Readiness probe            |
+| `/api/v1/ready/toggle` | POST   | Toggle readiness state     |
+| `/api/v1/details`      | GET    | System and request details |
+| `/api/v1/stats`        | GET    | System statistics          |
+| `/api/v1/getdate`      | GET    | Current date               |
+| `/metrics`             | GET    | Prometheus metrics         |
 
 ## Technology Stack
 

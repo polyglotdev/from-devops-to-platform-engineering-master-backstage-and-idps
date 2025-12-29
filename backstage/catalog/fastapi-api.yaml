@@ -49,13 +49,13 @@ spec:
       license:
         name: MIT
         url: https://opensource.org/licenses/MIT
-    
+
     servers:
       - url: http://fastapi-app.k8s.orb.local
         description: Local Kubernetes (OrbStack)
       - url: http://localhost:8000
         description: Local Development
-    
+
     tags:
       - name: greeting
         description: Simple greeting endpoints
@@ -65,7 +65,7 @@ spec:
         description: System diagnostics and statistics
       - name: observability
         description: Prometheus metrics and monitoring
-    
+
     paths:
       /api/v1/hello:
         get:
@@ -85,7 +85,7 @@ spec:
                       message:
                         type: string
                         example: "Hello, World!"
-    
+
       /api/v1/healthz:
         get:
           summary: Liveness Probe
@@ -107,7 +107,7 @@ spec:
                       status:
                         type: string
                         example: "ok"
-    
+
       /api/v1/ready:
         get:
           summary: Readiness Probe
@@ -145,7 +145,7 @@ spec:
                       reason:
                         type: string
                         example: "maintenance mode"
-    
+
       /api/v1/ready/toggle:
         post:
           summary: Toggle Readiness
@@ -180,7 +180,7 @@ spec:
                         type: boolean
                       reason:
                         type: string
-    
+
       /api/v1/details:
         get:
           summary: System Details
@@ -267,7 +267,7 @@ spec:
                       timestamp:
                         type: string
                         format: date-time
-    
+
       /api/v1/stats:
         get:
           summary: System Statistics
@@ -327,7 +327,7 @@ spec:
                             type: integer
                           connections:
                             type: integer
-    
+
       /api/v1/getdate:
         get:
           summary: Current Date
@@ -346,7 +346,7 @@ spec:
                       date:
                         type: string
                         example: "29-12-2025"
-    
+
       /metrics:
         get:
           summary: Prometheus Metrics

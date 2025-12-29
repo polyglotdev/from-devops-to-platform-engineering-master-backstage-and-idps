@@ -4,9 +4,9 @@ Complete documentation for the FastAPI Platform Demo REST API.
 
 ## Base URL
 
-| Environment | URL |
-|-------------|-----|
-| Local Development | `http://localhost:8000` |
+| Environment           | URL                                |
+| --------------------- | ---------------------------------- |
+| Local Development     | `http://localhost:8000`            |
 | Kubernetes (OrbStack) | `http://fastapi-app.k8s.orb.local` |
 
 ## Interactive Documentation
@@ -82,15 +82,15 @@ curl http://localhost:8000/api/v1/healthz
 ```
 
 !!! info "Kubernetes Usage"
-    Configure your liveness probe in the deployment:
-    ```yaml
+Configure your liveness probe in the deployment:
+`yaml
     livenessProbe:
       httpGet:
         path: /api/v1/healthz
         port: 8000
       initialDelaySeconds: 10
       periodSeconds: 30
-    ```
+    `
 
 ---
 
@@ -130,10 +130,10 @@ Toggle the readiness state. Useful for demos and testing rolling updates.
 
 **Parameters**
 
-| Name | Type | Default | Description |
-|------|------|---------|-------------|
-| `ready` | boolean | `true` | Set readiness state |
-| `reason` | string | `"toggled via API"` | Reason for the state change |
+| Name     | Type    | Default             | Description                 |
+| -------- | ------- | ------------------- | --------------------------- |
+| `ready`  | boolean | `true`              | Set readiness state         |
+| `reason` | string  | `"toggled via API"` | Reason for the state change |
 
 **Request - Set Not Ready**
 
@@ -157,8 +157,8 @@ curl -X POST "http://localhost:8000/api/v1/ready/toggle?ready=true&reason=mainte
 ```
 
 !!! tip "Demo Scenario"
-    Use this endpoint to demonstrate Kubernetes rolling updates:
-    
+Use this endpoint to demonstrate Kubernetes rolling updates:
+
     1. Toggle readiness to `false`
     2. Watch the pod become unready: `kubectl get pods -w`
     3. Traffic stops routing to the pod
@@ -249,8 +249,8 @@ curl http://localhost:8000/api/v1/details
 ```
 
 !!! note "Kubernetes Metadata"
-    The `kubernetes` section is populated from environment variables set via the
-    Kubernetes Downward API. These are configured in the Helm chart deployment.
+The `kubernetes` section is populated from environment variables set via the
+Kubernetes Downward API. These are configured in the Helm chart deployment.
 
 ---
 
@@ -338,9 +338,9 @@ See [Observability](observability.md) for detailed metrics documentation.
 
 All responses include custom headers for traceability:
 
-| Header | Description |
-|--------|-------------|
-| `X-Request-ID` | Unique request identifier (UUID) for tracing |
+| Header            | Description                                   |
+| ----------------- | --------------------------------------------- |
+| `X-Request-ID`    | Unique request identifier (UUID) for tracing  |
 | `X-Response-Time` | Request processing duration (e.g., `0.0023s`) |
 
 **Example**
@@ -360,12 +360,12 @@ curl -v http://localhost:8000/api/v1/hello
 
 The API uses standard HTTP status codes:
 
-| Code | Meaning |
-|------|---------|
-| 200 | Success |
-| 422 | Validation Error (invalid parameters) |
-| 500 | Internal Server Error |
-| 503 | Service Unavailable (not ready) |
+| Code | Meaning                               |
+| ---- | ------------------------------------- |
+| 200  | Success                               |
+| 422  | Validation Error (invalid parameters) |
+| 500  | Internal Server Error                 |
+| 503  | Service Unavailable (not ready)       |
 
 **Validation Error Response**
 
