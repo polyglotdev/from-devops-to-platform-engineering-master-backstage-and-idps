@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { defineConfig } from '@playwright/test';
-import { generateProjects } from '@backstage/e2e-test-utils/playwright';
+import { defineConfig } from '@playwright/test'
+import { generateProjects } from '@backstage/e2e-test-utils/playwright'
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -24,7 +24,7 @@ export default defineConfig({
   timeout: 60_000,
 
   expect: {
-    timeout: 5_000,
+    timeout: 5_000
   },
 
   // Run your local dev server before starting the tests
@@ -35,14 +35,14 @@ export default defineConfig({
           command: 'yarn start app',
           port: 3000,
           reuseExistingServer: true,
-          timeout: 60_000,
+          timeout: 60_000
         },
         {
           command: 'yarn start backend',
           port: 7007,
           reuseExistingServer: true,
-          timeout: 60_000,
-        },
+          timeout: 60_000
+        }
       ],
 
   forbidOnly: !!process.env.CI,
@@ -57,10 +57,10 @@ export default defineConfig({
       process.env.PLAYWRIGHT_URL ??
       (process.env.CI ? 'http://localhost:7007' : 'http://localhost:3000'),
     screenshot: 'only-on-failure',
-    trace: 'on-first-retry',
+    trace: 'on-first-retry'
   },
 
   outputDir: 'node_modules/.cache/e2e-test-results',
 
-  projects: generateProjects(), // Find all packages with e2e-test folders
-});
+  projects: generateProjects() // Find all packages with e2e-test folders
+})

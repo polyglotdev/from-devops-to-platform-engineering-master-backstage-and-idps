@@ -1,42 +1,42 @@
-import { Navigate, Route } from 'react-router-dom';
-import { apiDocsPlugin, ApiExplorerPage } from '@backstage/plugin-api-docs';
+import { Navigate, Route } from 'react-router-dom'
+import { apiDocsPlugin, ApiExplorerPage } from '@backstage/plugin-api-docs'
 import {
   CatalogEntityPage,
   CatalogIndexPage,
-  catalogPlugin,
-} from '@backstage/plugin-catalog';
+  catalogPlugin
+} from '@backstage/plugin-catalog'
 import {
   CatalogImportPage,
-  catalogImportPlugin,
-} from '@backstage/plugin-catalog-import';
-import { ScaffolderPage, scaffolderPlugin } from '@backstage/plugin-scaffolder';
-import { orgPlugin } from '@backstage/plugin-org';
-import { SearchPage } from '@backstage/plugin-search';
+  catalogImportPlugin
+} from '@backstage/plugin-catalog-import'
+import { ScaffolderPage, scaffolderPlugin } from '@backstage/plugin-scaffolder'
+import { orgPlugin } from '@backstage/plugin-org'
+import { SearchPage } from '@backstage/plugin-search'
 import {
   TechDocsIndexPage,
   techdocsPlugin,
-  TechDocsReaderPage,
-} from '@backstage/plugin-techdocs';
-import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
-import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
-import { UserSettingsPage } from '@backstage/plugin-user-settings';
-import { apis } from './apis';
-import { entityPage } from './components/catalog/EntityPage';
-import { searchPage } from './components/search/SearchPage';
-import { Root } from './components/Root';
+  TechDocsReaderPage
+} from '@backstage/plugin-techdocs'
+import { TechDocsAddons } from '@backstage/plugin-techdocs-react'
+import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib'
+import { UserSettingsPage } from '@backstage/plugin-user-settings'
+import { apis } from './apis'
+import { entityPage } from './components/catalog/EntityPage'
+import { searchPage } from './components/search/SearchPage'
+import { Root } from './components/Root'
 
 import {
   AlertDisplay,
   OAuthRequestDialog,
-  SignInPage,
-} from '@backstage/core-components';
-import { createApp } from '@backstage/app-defaults';
-import { AppRouter, FlatRoutes } from '@backstage/core-app-api';
-import { CatalogGraphPage } from '@backstage/plugin-catalog-graph';
-import { RequirePermission } from '@backstage/plugin-permission-react';
-import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
-import { NotificationsPage } from '@backstage/plugin-notifications';
-import { SignalsDisplay } from '@backstage/plugin-signals';
+  SignInPage
+} from '@backstage/core-components'
+import { createApp } from '@backstage/app-defaults'
+import { AppRouter, FlatRoutes } from '@backstage/core-app-api'
+import { CatalogGraphPage } from '@backstage/plugin-catalog-graph'
+import { RequirePermission } from '@backstage/plugin-permission-react'
+import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha'
+import { NotificationsPage } from '@backstage/plugin-notifications'
+import { SignalsDisplay } from '@backstage/plugin-signals'
 
 const app = createApp({
   apis,
@@ -44,23 +44,23 @@ const app = createApp({
     bind(catalogPlugin.externalRoutes, {
       createComponent: scaffolderPlugin.routes.root,
       viewTechDoc: techdocsPlugin.routes.docRoot,
-      createFromTemplate: scaffolderPlugin.routes.selectedTemplate,
-    });
+      createFromTemplate: scaffolderPlugin.routes.selectedTemplate
+    })
     bind(apiDocsPlugin.externalRoutes, {
-      registerApi: catalogImportPlugin.routes.importPage,
-    });
+      registerApi: catalogImportPlugin.routes.importPage
+    })
     bind(scaffolderPlugin.externalRoutes, {
       registerComponent: catalogImportPlugin.routes.importPage,
-      viewTechDoc: techdocsPlugin.routes.docRoot,
-    });
+      viewTechDoc: techdocsPlugin.routes.docRoot
+    })
     bind(orgPlugin.externalRoutes, {
-      catalogIndex: catalogPlugin.routes.catalogIndex,
-    });
+      catalogIndex: catalogPlugin.routes.catalogIndex
+    })
   },
   components: {
-    SignInPage: props => <SignInPage {...props} auto providers={['guest']} />,
-  },
-});
+    SignInPage: (props) => <SignInPage {...props} auto providers={['guest']} />
+  }
+})
 
 const routes = (
   <FlatRoutes>
@@ -98,7 +98,7 @@ const routes = (
     <Route path="/catalog-graph" element={<CatalogGraphPage />} />
     <Route path="/notifications" element={<NotificationsPage />} />
   </FlatRoutes>
-);
+)
 
 export default app.createRoot(
   <>
@@ -108,5 +108,5 @@ export default app.createRoot(
     <AppRouter>
       <Root>{routes}</Root>
     </AppRouter>
-  </>,
-);
+  </>
+)

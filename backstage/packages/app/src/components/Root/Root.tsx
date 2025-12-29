@@ -1,16 +1,16 @@
-import { PropsWithChildren } from 'react';
-import { makeStyles } from '@material-ui/core';
-import HomeIcon from '@material-ui/icons/Home';
-import ExtensionIcon from '@material-ui/icons/Extension';
-import LibraryBooks from '@material-ui/icons/LibraryBooks';
-import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
-import LogoFull from './LogoFull';
-import LogoIcon from './LogoIcon';
+import { PropsWithChildren } from 'react'
+import { makeStyles } from '@material-ui/core'
+import HomeIcon from '@material-ui/icons/Home'
+import ExtensionIcon from '@material-ui/icons/Extension'
+import LibraryBooks from '@material-ui/icons/LibraryBooks'
+import CreateComponentIcon from '@material-ui/icons/AddCircleOutline'
+import LogoFull from './LogoFull'
+import LogoIcon from './LogoIcon'
 import {
   Settings as SidebarSettings,
-  UserSettingsSignInAvatar,
-} from '@backstage/plugin-user-settings';
-import { SidebarSearchModal } from '@backstage/plugin-search';
+  UserSettingsSignInAvatar
+} from '@backstage/plugin-user-settings'
+import { SidebarSearchModal } from '@backstage/plugin-search'
 import {
   Sidebar,
   sidebarConfig,
@@ -21,13 +21,13 @@ import {
   SidebarScrollWrapper,
   SidebarSpace,
   useSidebarOpenState,
-  Link,
-} from '@backstage/core-components';
-import MenuIcon from '@material-ui/icons/Menu';
-import SearchIcon from '@material-ui/icons/Search';
-import { MyGroupsSidebarItem } from '@backstage/plugin-org';
-import GroupIcon from '@material-ui/icons/People';
-import { NotificationsSidebarItem } from '@backstage/plugin-notifications';
+  Link
+} from '@backstage/core-components'
+import MenuIcon from '@material-ui/icons/Menu'
+import SearchIcon from '@material-ui/icons/Search'
+import { MyGroupsSidebarItem } from '@backstage/plugin-org'
+import GroupIcon from '@material-ui/icons/People'
+import { NotificationsSidebarItem } from '@backstage/plugin-notifications'
 
 const useSidebarLogoStyles = makeStyles({
   root: {
@@ -36,17 +36,17 @@ const useSidebarLogoStyles = makeStyles({
     display: 'flex',
     flexFlow: 'row nowrap',
     alignItems: 'center',
-    marginBottom: -14,
+    marginBottom: -14
   },
   link: {
     width: sidebarConfig.drawerWidthClosed,
-    marginLeft: 24,
-  },
-});
+    marginLeft: 24
+  }
+})
 
 const SidebarLogo = () => {
-  const classes = useSidebarLogoStyles();
-  const { isOpen } = useSidebarOpenState();
+  const classes = useSidebarLogoStyles()
+  const { isOpen } = useSidebarOpenState()
 
   return (
     <div className={classes.root}>
@@ -54,8 +54,8 @@ const SidebarLogo = () => {
         {isOpen ? <LogoFull /> : <LogoIcon />}
       </Link>
     </div>
-  );
-};
+  )
+}
 
 export const Root = ({ children }: PropsWithChildren<{}>) => (
   <SidebarPage>
@@ -96,4 +96,4 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
     </Sidebar>
     {children}
   </SidebarPage>
-);
+)
