@@ -1,0 +1,27 @@
+---
+# Domain: Platform Engineering
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-domain
+#
+# A domain groups systems that share terminology, domain models, business purpose,
+# or documentation. Platform Engineering encompasses all developer experience
+# and infrastructure automation efforts.
+
+apiVersion: backstage.io/v1alpha1
+kind: Domain
+metadata:
+  name: platform-engineering
+  description: |
+    Platform Engineering domain encompassing all developer experience initiatives,
+    infrastructure automation, and internal developer platform components.
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+  tags:
+    - platform
+    - devex
+    - infrastructure
+  links:
+    - url: https://github.com/polyglotdev/from-devops-to-platform-engineering-master-backstage-and-idps
+      title: GitHub Repository
+      icon: github
+spec:
+  owner: group:platform-engineering
