@@ -140,6 +140,26 @@ argocd-app-sync: ## Force sync ArgoCD application
 argocd-app-status: ## Check ArgoCD application status
 	kubectl get application -n $(ARGOCD_NAMESPACE) fastapi-app -o wide
 
+##@ ArgoCD Image Updater
+
+argocd-image-updater-install: helm-repo-add ## Install ArgoCD Image Updater via Helm
+	helm upgrade --install argocd-image-updater argo/argocd-image-updater \
+		--namespace $(ARGOCD_NAMESPACE) \
+		--values helm/argocd-image-updater/values.yaml \
+		--wait
+
+argocd-image-updater-uninstall: ## Uninstall ArgoCD Image Updater
+	helm uninstall argocd-image-updater --namespace $(ARGOCD_NAMESPACE)
+
+argocd-image-updater-logs: ## Tail ArgoCD Image Updater logs
+	kubectl logs -n $(ARGOCD_NAMESPACE) -l app.kubernetes.io/name=argocd-image-updater -f --tail=100
+
+argocd-image-updater-status: ## Check ArgoCD Image Updater pod status
+	kubectl get pods -n $(ARGOCD_NAMESPACE) -l app.kubernetes.io/name=argocd-image-updater
+
+argocd-image-updater-config: ## Show ArgoCD Image Updater configmap
+	kubectl get configmap argocd-image-updater-config -n $(ARGOCD_NAMESPACE) -o yaml
+
 ##@ Kubernetes
 
 k8s-pods: ## List pods in platform-demo namespace
