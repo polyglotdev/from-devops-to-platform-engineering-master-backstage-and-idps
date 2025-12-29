@@ -1,0 +1,33 @@
+# Build outputs
+dist
+dist-types
+build
+coverage
+
+# Dependencies
+node_modules
+.yarn/cache
+.yarn/install-state.gz
+.pnp.*
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# Yarn
+yarn.lock
+
+# Generated files
+*.min.js
+*.min.css
+*.bundle.js
+
+# Backstage specific
+skeleton.tar.gz
+bundle.tar.gz
+
+# Misc
+.DS_Store
+*.log

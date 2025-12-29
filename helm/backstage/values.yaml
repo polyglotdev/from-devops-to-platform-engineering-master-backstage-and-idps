@@ -1,0 +1,113 @@
+# Backstage Helm values for local development
+# Chart: backstage/backstage
+
+# Ingress configuration
+ingress:
+  enabled: true
+  className: nginx
+  host: backstage.k8s.orb.local
+  annotations:
+    nginx.ingress.kubernetes.io/force-ssl-redirect: 'false'
+    nginx.ingress.kubernetes.io/backend-protocol: HTTP
+
+# Backstage application configuration
+backstage:
+  image:
+    registry: docker.io
+    repository: domniniquehallan/backstage
+    tag: latest
+
+  # Resource limits for local development
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+
+  # Backstage app-config inline (non-sensitive values)
+  appConfig:
+    app:
+      title: Platform Engineering Portal
+      baseUrl: http://backstage.k8s.orb.local
+
+    organization:
+      name: Platform Team
+
+    backend:
+      baseUrl: http://backstage.k8s.orb.local
+      listen:
+        port: 7007
+      csp:
+        connect-src: ["'self'", 'http:', 'https:']
+      cors:
+        origin: http://backstage.k8s.orb.local
+        methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
+        credentials: true
+      database:
+        client: pg
+        connection:
+          host: ${POSTGRES_HOST}
+          port: ${POSTGRES_PORT}
+          user: ${POSTGRES_USER}
+          password: ${POSTGRES_PASSWORD}
+
+    # TechDocs configuration - local builder for dev
+    techdocs:
+      builder: local
+      generator:
+        runIn: local
+      publisher:
+        type: local
+
+    # Catalog configuration
+    catalog:
+      import:
+        entityFilename: catalog-info.yaml
+        pullRequestBranchName: backstage-integration
+      rules:
+        - allow: [Component, System, API, Resource, Location, Template, Group, User]
+      locations: []
+
+  # Environment variables for database connection
+  extraEnvVars:
+    - name: POSTGRES_HOST
+      value: '{{ .Release.Name }}-postgresql'
+    - name: POSTGRES_PORT
+      value: '5432'
+    - name: POSTGRES_USER
+      value: backstage
+    - name: POSTGRES_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: '{{ .Release.Name }}-postgresql'
+          key: password
+
+# PostgreSQL subchart configuration
+postgresql:
+  enabled: true
+  image:
+    registry: docker.io
+    repository: bitnami/postgresql
+    tag: latest
+  auth:
+    username: backstage
+    password: backstage
+    database: backstage
+  primary:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 256Mi
+    persistence:
+      enabled: true
+      size: 1Gi
+
+# Service Account
+serviceAccount:
+  create: true
+  name: backstage
