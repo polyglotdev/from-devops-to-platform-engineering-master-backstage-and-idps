@@ -81,12 +81,48 @@ backstage:
         entityFilename: catalog-info.yaml
         pullRequestBranchName: backstage-integration
       rules:
-        - allow: [Component, System, API, Resource, Location, Template, Group, User]
+        - allow: [Component, System, API, Resource, Location, Domain, Template, Group, User]
       locations:
+        # Platform Demo Catalog - Organization Structure
         - type: file
-          target: ./examples/org.yaml
+          target: ./catalog/groups.yaml
           rules:
             - allow: [User, Group]
+        # Platform Demo Catalog - Domain
+        - type: file
+          target: ./catalog/domain.yaml
+          rules:
+            - allow: [Domain]
+        # Platform Demo Catalog - System
+        - type: file
+          target: ./catalog/system.yaml
+          rules:
+            - allow: [System]
+        # Platform Demo Catalog - Infrastructure Resources
+        - type: file
+          target: ./catalog/resources.yaml
+          rules:
+            - allow: [Resource]
+        # Platform Demo Catalog - CI/CD Pipelines
+        - type: file
+          target: ./catalog/pipelines.yaml
+          rules:
+            - allow: [Component]
+        # Platform Demo Catalog - API Definition
+        - type: file
+          target: ./catalog/fastapi-api.yaml
+          rules:
+            - allow: [API]
+        # Platform Demo Catalog - FastAPI Service
+        - type: file
+          target: ./catalog/fastapi-service.yaml
+          rules:
+            - allow: [Component]
+        # Software Templates
+        - type: file
+          target: ./examples/template/template.yaml
+          rules:
+            - allow: [Template]
 
   # Environment variables for database and auth
   extraEnvVars:

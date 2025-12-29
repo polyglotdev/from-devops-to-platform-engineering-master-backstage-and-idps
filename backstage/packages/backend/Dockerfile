@@ -57,8 +57,10 @@ RUN tar xzf skeleton.tar.gz && rm skeleton.tar.gz
 RUN --mount=type=cache,target=/root/.yarn/berry/cache \
     yarn workspaces focus --all --production
 
-# Copy examples and bundle
+# Copy catalog, examples, docs, and bundle
+COPY --from=builder /app/catalog ./catalog
 COPY --from=builder /app/examples ./examples
+COPY --from=builder /app/docs ./docs
 COPY --from=builder /app/packages/backend/dist/bundle.tar.gz ./
 COPY --from=builder /app/app-config*.yaml ./
 RUN tar xzf bundle.tar.gz && rm bundle.tar.gz
