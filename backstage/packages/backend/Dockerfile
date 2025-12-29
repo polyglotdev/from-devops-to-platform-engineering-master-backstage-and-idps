@@ -15,7 +15,6 @@ COPY .yarn ./.yarn
 COPY .yarnrc.yml yarn.lock package.json backstage.json ./
 COPY packages/backend/package.json packages/backend/
 COPY packages/app/package.json packages/app/
-COPY plugins ./plugins
 
 # Install all dependencies
 RUN --mount=type=cache,target=/root/.yarn/berry/cache \
