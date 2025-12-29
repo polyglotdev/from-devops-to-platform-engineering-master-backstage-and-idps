@@ -37,11 +37,11 @@ spec:
 
           appConfig:
             app:
-              title: Platform Engineering Portal
+              title: HealthBridge Financial
               baseUrl: http://backstage.k8s.orb.local
 
             organization:
-              name: Platform Team
+              name: HealthBridge Financial
 
             backend:
               baseUrl: http://backstage.k8s.orb.local
@@ -68,6 +68,14 @@ spec:
               publisher:
                 type: local
 
+            auth:
+              environment: production
+              providers:
+                github:
+                  production:
+                    clientId: ${GITHUB_AUTH_CLIENT_ID}
+                    clientSecret: ${GITHUB_AUTH_CLIENT_SECRET}
+
             catalog:
               import:
                 entityFilename: catalog-info.yaml
@@ -88,6 +96,16 @@ spec:
                 secretKeyRef:
                   name: backstage-postgresql
                   key: password
+            - name: GITHUB_AUTH_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: backstage-github-auth
+                  key: clientId
+            - name: GITHUB_AUTH_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: backstage-github-auth
+                  key: clientSecret
 
         postgresql:
           enabled: true

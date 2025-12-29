@@ -1,9 +1,9 @@
 app:
-  title: Scaffolded Backstage App
+  title: HealthBridge Financial
   baseUrl: http://localhost:3000
 
 organization:
-  name: My Company
+  name: HealthBridge Financial
 
 backend:
   # Used for enabling authentication, secret is shared by all backend plugins
@@ -63,9 +63,13 @@ techdocs:
     type: 'local' # Alternatives - 'googleGcs' or 'awsS3'. Read documentation for using alternatives.
 
 auth:
-  # see https://backstage.io/docs/auth/ to learn about auth providers
+  environment: development
   providers:
-    # See https://backstage.io/docs/auth/guest/provider
+    github:
+      development:
+        clientId: ${GITHUB_AUTH_CLIENT_ID}
+        clientSecret: ${GITHUB_AUTH_CLIENT_SECRET}
+    # Guest fallback for local dev without OAuth configured
     guest: {}
 
 scaffolder:

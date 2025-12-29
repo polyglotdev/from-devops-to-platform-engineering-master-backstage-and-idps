@@ -29,11 +29,11 @@ backstage:
   # Backstage app-config inline (non-sensitive values)
   appConfig:
     app:
-      title: Platform Engineering Portal
+      title: HealthBridge Financial
       baseUrl: http://backstage.k8s.orb.local
 
     organization:
-      name: Platform Team
+      name: HealthBridge Financial
 
     backend:
       baseUrl: http://backstage.k8s.orb.local
@@ -61,6 +61,15 @@ backstage:
       publisher:
         type: local
 
+    # Auth configuration
+    auth:
+      environment: production
+      providers:
+        github:
+          production:
+            clientId: ${GITHUB_AUTH_CLIENT_ID}
+            clientSecret: ${GITHUB_AUTH_CLIENT_SECRET}
+
     # Catalog configuration
     catalog:
       import:
@@ -70,7 +79,7 @@ backstage:
         - allow: [Component, System, API, Resource, Location, Template, Group, User]
       locations: []
 
-  # Environment variables for database connection
+  # Environment variables for database and auth
   extraEnvVars:
     - name: POSTGRES_HOST
       value: '{{ .Release.Name }}-postgresql'
@@ -83,6 +92,16 @@ backstage:
         secretKeyRef:
           name: '{{ .Release.Name }}-postgresql'
           key: password
+    - name: GITHUB_AUTH_CLIENT_ID
+      valueFrom:
+        secretKeyRef:
+          name: backstage-github-auth
+          key: clientId
+    - name: GITHUB_AUTH_CLIENT_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: backstage-github-auth
+          key: clientSecret
 
 # PostgreSQL subchart configuration
 postgresql:
